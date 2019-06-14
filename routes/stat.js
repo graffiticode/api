@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { isNonEmptyString } = require('./../src/utils');
 
-module.exports = (dbQuery, insertItem) => {
+module.exports = (dbQuery) => {
   const router = new Router();
   // Get a stat  
   router.get('/', (req, res) => {
@@ -43,4 +43,19 @@ module.exports = (dbQuery, insertItem) => {
     });
   });
   return router;
+  function insertItem(userID, itemID, resume) {
+    dbQuery("SELECT count(*) FROM items where userID=" + userID + "AND itemID='" + itemID + "'", (err, result) => {
+      if (+result.rows[0].count === 0) {
+        let [langID, codeID, ...dataID] = decodeID(itemID);
+        dataID = encodeID(dataID);
+        dbQuery("INSERT INTO items (userID, itemID, langID, codeID, dataID) " +
+                "VALUES (" + userID + ", '" + itemID + "', " + langID + ", " + codeID + ", '" + dataID + "') ",
+                (err, result) => {
+                  resume();
+                });
+      } else {
+        resume();
+      }
+    });
+  }
 };
