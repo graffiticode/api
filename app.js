@@ -94,17 +94,7 @@ app.engine('html', function (templateFile, options, callback) {
 
 // Routes
 
-// http://stackoverflow.com/questions/10435407/proxy-with-express-js
 var request = require('request');
-
-// app.get("/", (req, res) => {
-//   let proto = req.headers['x-forwarded-proto'] || "http";
-//   if (aliases["home"]) {
-//     request([proto, "://", req.headers.host, "/form?id=" + aliases["home"]].join("")).pipe(res);
-//   } else {
-//     request([proto, "://", req.headers.host, "/form?id=q1yU91wYFN"].join("")).pipe(res);
-//   }
-// });
 
 const aliases = {};
 function dbQuery(query, resume) {
@@ -247,8 +237,37 @@ function parse(lang, src, resume) {
   }
 }
 
-app.use('/label', routes.label(dbQuery));
-app.use('/stat', routes.stat(dbQuery));
+// Client login
+const clientAddress = process.env.ARTCOMPILER_CLIENT_ADDRESS
+  ? process.env.ARTCOMPILER_CLIENT_ADDRESS
+  : "0x0123456789abcdef0123456789abcdef01234567";
+let authToken = process.env.ARTCOMPILER_CLIENT_SECRET;
+if (!module.parent) {
+  var port = process.env.PORT || 3000;
+  app.listen(port, async function() {
+    console.log("Listening on " + port);
+    console.log("Using address " + clientAddress);
+    if (!authToken) {
+      // Secret not stored in env so get one.
+      console.log("ARTCOMPILER_CLIENT_SECRET not set. Generating a temporary secret.");
+      postAuth("/login", {
+        "address": clientAddress,
+      }, (err, data) => {
+        postAuth("/finishLogin", {
+          "jwt": data.jwt,
+        }, (err, data) => {
+          // Default auth token.
+          authToken = data.jwt;
+        });
+      });
+    }
+  });
+}
+
+app.use('/form', routes.form(authToken, sendForm));
+app.use('/data', routes.data(authToken, sendData));
+app.use('/d', routes.d(authToken, sendData));
+app.use('/code', routes.code(authToken, sendCode));
 
 function sendForm (id, req, res) {
   let ids = decodeID(id);
@@ -315,11 +334,7 @@ function sendForm (id, req, res) {
       }
     });
   }
-};
-
-app.get("/form", function (req, res) {
-  sendForm(req.query.id, req, res);
-});
+}
 
 function sendData (auth, id, req, res) {
   let ids = decodeID(id);
@@ -342,14 +357,6 @@ function sendData (auth, id, req, res) {
   });
 }
 
-app.get("/data", (req, res) => {
-  sendData(authToken, req.query.id, req, res);
-});
-
-app.get("/d/:id", (req, res) => {
-  sendData(authToken, req.params.id, req, res);
-});
-
 function sendCode (id, req, res) {
   // Send the source code for an item.
   var ids = decodeID(id);
@@ -368,14 +375,6 @@ function sendCode (id, req, res) {
     }
   });
 }
-
-app.get('/code', (req, res) => {
-  sendCode(req.query.id, req, res);
-});
-
-app.get("/c/:id", (req, res) => {
-  sendCode(req.params.id, req, res);
-});
 
 let compilerVersions = {};
 function getCompilerVersion(lang, resume) {
@@ -1289,30 +1288,3 @@ function postAuth(path, data, resume) {
   });
 }
 
-// Client login
-
-const clientAddress = process.env.ARTCOMPILER_CLIENT_ADDRESS
-  ? process.env.ARTCOMPILER_CLIENT_ADDRESS
-  : "0x0123456789abcdef0123456789abcdef01234567";
-let authToken = process.env.ARTCOMPILER_CLIENT_SECRET;
-if (!module.parent) {
-  var port = process.env.PORT || 3000;
-  app.listen(port, async function() {
-    console.log("Listening on " + port);
-    console.log("Using address " + clientAddress);
-    if (!authToken) {
-      // Secret not stored in env so get one.
-      console.log("ARTCOMPILER_CLIENT_SECRET not set. Generating a temporary secret.");
-      postAuth("/login", {
-        "address": clientAddress,
-      }, (err, data) => {
-        postAuth("/finishLogin", {
-          "jwt": data.jwt,
-        }, (err, data) => {
-          // Default auth token.
-          authToken = data.jwt;
-        });
-      });
-    }
-  });
-}
