@@ -1,9 +1,9 @@
 const { Router } = require('express');
-const { isNonEmptyString } = require('./../src/utils');
-module.exports = (auth, getForm) => {
+module.exports = (auth, getItems) => {
   const router = new Router();
   router.get('/', (req, res) => {
-    getForm(req, res);
+    getItems(req, res);
   });
   return router;
 };
+

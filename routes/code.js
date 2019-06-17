@@ -1,12 +1,12 @@
 const { Router } = require('express');
 const { isNonEmptyString } = require('./../src/utils');
-module.exports = (auth, sendData) => {
+module.exports = (auth, getCode, putCode) => {
   const router = new Router();
   router.get('/', (req, res) => {
-    sendCode(req.query.id, req, res);
+    getCode(req, res);
   });
   router.put('/', (req, res) => {
-    sendCode(req.query.id, req, res);
+    putCode(req, res);
   });
   return router;
 };

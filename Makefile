@@ -5,4 +5,4 @@ test: build
 	npm run test
 
 build:
-	browserify -t babelify ./src/form.js > ./lib/form.js
+	browserify -t babelify ./src/formView.js > ./lib/formView.js

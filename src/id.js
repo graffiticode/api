@@ -51,7 +51,6 @@ function decodeID(id) {
   // console.log('[2] decodeID() << ' + JSON.stringify(ids));
   return ids;
 }
-module.exports.decodeID = decodeID;
 
 function encodeID(ids) {
   // console.log('[1] encodeID() >> ' + JSON.stringify(ids));
@@ -77,4 +76,5 @@ function encodeID(ids) {
   return id;
 }
 
+module.exports.decodeID = decodeID;
 module.exports.encodeID = encodeID;
