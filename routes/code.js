@@ -5,5 +5,8 @@ module.exports = (auth, sendData) => {
   router.get('/', (req, res) => {
     sendCode(req.query.id, req, res);
   });
+  router.put('/', (req, res) => {
+    sendCode(req.query.id, req, res);
+  });
   return router;
 };
