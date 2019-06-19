@@ -1,5 +1,4 @@
 const {decodeID, encodeID} = require('./id.js');
-const {dbQuery, postItem, updateItem} = require('./db.js');
 const {compileID} = require('./comp.js');
 const {getCompilerVersion} = require('./lang.js');
 

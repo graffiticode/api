@@ -1,6 +1,6 @@
 const {parseJSON, cleanAndTrimObj, cleanAndTrimSrc, dot2num} = require('./utils.js');
 const {decodeID, encodeID} = require('./id.js');
-const {dbQuery, getItem, postItem, updateItem} = require('./db.js');
+const {dbQueryAsync, getItem, postItem, updateItem} = require('./db.js');
 const {compileID} = require('./comp.js');
 
 function getCode(req, res) {
@@ -47,7 +47,7 @@ function putCode(req, res) {
     // Otherwise look for an item with matching source.
     query = "SELECT * FROM pieces WHERE language='" + lang + "' AND src = '" + src + "' ORDER BY pieces.id";
   }
-  dbQuery(query, function(err, result) {
+  dbQueryAsync(query, function(err, result) {
     // See if there is already an item with the same source for the same
     // language. If so, pass it on.
     var row = result.rows[0];

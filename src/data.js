@@ -1,5 +1,5 @@
 const {decodeID, encodeID} = require('./id.js');
-const {dbQuery, postItem, updateItem} = require('./db.js');
+const {dbQueryAsync, postItem, updateItem} = require('./db.js');
 const {compileID} = require('./comp.js');
 
 function getData(auth, id, req, res) {
@@ -38,7 +38,7 @@ function putData(auth, data, resume) {
   let query =
     "SELECT * FROM pieces WHERE language='" + lang +
     "' AND src='" + src + "' LIMIT 1";
-  dbQuery(query, function(err, result) {
+  dbQueryAsync(query, function(err, result) {
     // See if there is already an item with the same source for the same
     // language. If so, pass it on.
     var row = result.rows[0];

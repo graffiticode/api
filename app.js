@@ -9,7 +9,7 @@ const methodOverride = require("method-override");
 const morgan = require("morgan");
 const routes = require('./routes');
 const {decodeID, encodeID} = require('./src/id.js');
-const {dbQuery, getItems, getItem, postItem, updateItem, updateAST, updateOBJ} = require('./src/db.js');
+const {dbQueryAsync, getItems, getItem, postItem, updateItem, updateAST, updateOBJ} = require('./src/db.js');
 const {delCache, getCache, setCache} = require('./src/cache.js');
 const {compileID} = require('./src/comp.js');
 const {pingLang, getCompilerVersion, getCompilerHost, getCompilerPort} = require('./src/lang.js');
@@ -138,7 +138,7 @@ app.get("/:lang/*", function (req, response) {
   });
 });
 
-dbQuery("SELECT NOW() as when", (err, result) => {
+dbQueryAsync("SELECT NOW() as when", (err, result) => {
   if (err) {
     console.error(err.stack);
     process.exit(1);

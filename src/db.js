@@ -20,14 +20,44 @@ function getConStr(id) {
   return conStrs[0];
 }
 
+function dbQuery(query) {
+  return new Promise((accept, reject) => {
+    let conString = getConStr(0);
+    pg.connect(conString, function (err, client, done) {
+      // If there is an error, client is null and done is a noop
+      if (err) {
+        console.log("ERROR [1] dbQuery() err=" + err);
+        reject(err);
+      }
+      try {
+        client.query(query, function (err, result) {
+          done();
+          if (err) {
+            reject(err + ": " + query);
+          } else {
+            if (!result) {
+              result = {
+                rows: [],
+              };
+            }
+            return accept(result);
+          }
+        });
+      } catch (e) {
+        console.log("ERROR [2] dbQuery() e=" + e);
+        done();
+        reject(e);
+      }
+    });
+  });
+}
 
-function dbQuery(query, resume) {
+function dbQueryAsync(query, resume) {
   let conString = getConStr(0);
-  // Query Helper -- https://github.com/brianc/node-postgres/issues/382
   pg.connect(conString, function (err, client, done) {
     // If there is an error, client is null and done is a noop
     if (err) {
-      console.log("ERROR [1] dbQuery() err=" + err);
+      console.log("ERROR [1] dbQueryAsync() err=" + err);
       return resume(err, {});
     }
     try {
@@ -44,7 +74,7 @@ function dbQuery(query, resume) {
         return resume(err, result);
       });
     } catch (e) {
-      console.log("ERROR [2] dbQuery() e=" + e);
+      console.log("ERROR [2] dbQueryAsync() e=" + e);
       done();
       return resume(e);
     }
@@ -57,12 +87,17 @@ function updateAST(id, ast, resume) {
     "UPDATE pieces SET " +
     "ast='" + ast + "' " +
     "WHERE id='" + id + "'";
-  dbQuery(query, function (err) {
-    if (err && err.length) {
-      console.log("ERROR updateAST() err=" + err);
-    }
-    resume(err, []);
-  });
+  dbQuery(query)
+    .then(
+      () => {
+        resume(null, []);
+      })
+    .catch(err => {
+      if (err && err.length) {
+        console.log("ERROR updateAST() err=" + err);
+      }
+      resume(err, []);
+    });
 }
 
 function updateOBJ(id, obj, resume) {
@@ -71,26 +106,29 @@ function updateOBJ(id, obj, resume) {
     "UPDATE pieces SET " +
     "obj='" + obj + "' " +
     "WHERE id='" + id + "'";
-  dbQuery(query, function (err) {
+  dbQueryAsync(query, function (err) {
     resume(err, []);
   });
 }
 
 function getItem(itemID, resume) {
-  dbQuery("SELECT * FROM pieces WHERE id = " + itemID, (err, result) => {
-    // Here we get the language associated with the id. The code is gotten by
-    // the view after it is loaded.
-    let val;
-    if (!result || !result.rows || result.rows.length === 0 || result.rows[0].id < 1000) {
-      // Any id before 1000 was experimental
-      resume("Bad ID", null);
-    } else {
-      //assert(result.rows.length === 1);
-      val = result.rows[0];
-      resume(err, val);
-    }
-  });
+  dbQuery("SELECT * FROM pieces WHERE id = " + itemID)
+    .then(result => {
+      let val;
+      if (!result || !result.rows || result.rows.length === 0 || result.rows[0].id < 1000) {
+        // Any id before 1000 was experimental
+        resume("Bad ID", null);
+      } else {
+        //assert(result.rows.length === 1);
+        val = result.rows[0];
+        resume(null, val);
+      }
+    })
+    .catch(err => {
+      resume(err);
+    });
 }
+
 
 // Commit and return commit id
 function postItem(language, src, ast, obj, user, parent, img, label, forkID, resume) {
@@ -106,22 +144,22 @@ function postItem(language, src, ast, obj, user, parent, img, label, forkID, res
     "INSERT INTO pieces (address, fork_id, user_id, parent_id, views, forks, created, src, obj, language, label, img, ast)" +
     " VALUES ('" + global.clientAddress + "','" + forkID + "','" + user + "','" + parent + " ','" + views + " ','" + forks + "',now(),'" + src + "','" + obj + "','" + language + "','" +
     label + "','" + img + "','" + ast + "');"
-  dbQuery(queryStr, function(err, result) {
+  dbQueryAsync(queryStr, function(err, result) {
     if (err) {
       console.log("ERROR postItem() " + queryStr);
       resume(err);
     } else {
       var queryStr = "SELECT * FROM pieces ORDER BY id DESC LIMIT 1";
-      dbQuery(queryStr, function (err, result) {
+      dbQueryAsync(queryStr, function (err, result) {
         let codeID = +result.rows[0].id;
         forkID = forkID || codeID;
         var query =
           "UPDATE pieces SET " +
           "fork_id=" + forkID + " " +
           "WHERE id=" + codeID;
-        dbQuery(query, function (err) {
+        dbQueryAsync(query, function (err) {
           resume(err, result);
-          dbQuery("UPDATE pieces SET forks=forks+1 WHERE id=" + parent, () => {});
+          dbQueryAsync("UPDATE pieces SET forks=forks+1 WHERE id=" + parent, () => {});
         });
       });
     }
@@ -142,7 +180,7 @@ function updateItem(id, language, src, ast, obj, img, resume) {
     "obj='" + obj + "'," +
     "img='" + img + "'" +
     "WHERE id='" + id + "'";
-  dbQuery(query, function (err) {
+  dbQueryAsync(query, function (err) {
     resume(err, []);
   });
 }
@@ -170,7 +208,7 @@ function getItems(req, res) {
     console.log("ERROR [1] GET /items");
     res.sendStatus(400);
   }
-  dbQuery(queryStr, function (err, result) {
+  dbQueryAsync(queryStr, function (err, result) {
     var rows;
     if (!result || result.rows.length === 0) {
       rows = [];
@@ -179,7 +217,7 @@ function getItems(req, res) {
     }
     let mark = req.query.stat && req.query.stat.mark;
     if (mark !== undefined) {
-      dbQuery("SELECT codeid FROM items WHERE " +
+      dbQueryAsync("SELECT codeid FROM items WHERE " +
               "userid='" + userID +
               "' AND mark='" + mark + "'",
               (err, result) => {
@@ -207,7 +245,7 @@ function getItems(req, res) {
   });
 }
 
-exports.dbQuery = dbQuery;
+exports.dbQueryAsync = dbQueryAsync;
 exports.updateAST = updateAST;
 exports.updateOBJ = updateOBJ;
 exports.getItem = getItem;

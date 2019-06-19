@@ -1,6 +1,6 @@
 const assert = require('assert');
 const {decodeID, encodeID} = require('./id.js');
-const {dbQuery, getItem, updateAST, updateOBJ} = require('./db.js');
+const {dbQueryAsync, getItem, updateAST, updateOBJ} = require('./db.js');
 const {delCache, getCache, setCache} = require('./cache.js');
 const {pingLang, getCompilerVersion, getCompilerHost, getCompilerPort} = require('./lang.js');
 const {parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./utils.js');
@@ -8,7 +8,7 @@ const parser = require('./parser.js');
 
 const nilID = encodeID([0,0,0]);
 
-function getDataOfID(auth, ids, refresh, resume) {
+function getData(auth, ids, refresh, resume) {
   if (encodeID(ids) === nilID || ids.length === 3 && +ids[2] === 0) {
     resume(null, {});
   } else {
@@ -18,7 +18,7 @@ function getDataOfID(auth, ids, refresh, resume) {
   }
 }
 
-function getCodeOfID(ids, resume) {
+function getCode(ids, resume) {
   getItem(ids[1], (err, item) => {
     // if L113 there is no AST.
     if (item && item.ast) {
@@ -27,7 +27,7 @@ function getCodeOfID(ids, resume) {
     } else {
       if (ids[0] !== 113) {
         console.log("No AST found: langID=" + ids[0] + " codeID=" + ids[1]);
-        assert(item, "ERROR getCodeOfID() item not found: " + ids);
+        assert(item, "ERROR getCode() item not found: " + ids);
         let lang = item.language;
         let src = item.src.replace(/\\\\/g, "\\");
         parse(lang, src, (err, ast) => {
@@ -72,8 +72,8 @@ function compileID(auth, id, options, resume) {
         resume(err, val);
       } else {
         countView(ids[1]);  // Count every time code is used to compile a new item.
-        getDataOfID(auth, ids, refresh, (err, data) => {
-          getCodeOfID(ids, (err, code) => {
+        getData(auth, ids, refresh, (err, data) => {
+          getCode(ids, (err, code) => {
             if (err && err.length) {
               resume(err, null);
             } else {
@@ -190,13 +190,12 @@ function comp(auth, lang, code, data, options, resume) {
   });
 }
 
-
 function countView(id) {
   var query =
     "UPDATE pieces SET " +
     "views=views+1 " +
     "WHERE id='" + id + "'";
-  dbQuery(query, function (err) {
+  dbQueryAsync(query, function (err) {
     if (err && err.length) {
       console.log("ERROR updateViews() err=" + err);
     }
