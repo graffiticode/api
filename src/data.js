@@ -34,6 +34,7 @@ function putData(auth, data, resume) {
   let obj = JSON.stringify(data);
   let lang = "L113";
   let user = 0;
+  // FIXME search for AST
   let query =
     "SELECT * FROM pieces WHERE language='" + lang +
     "' AND src='" + src + "' LIMIT 1";

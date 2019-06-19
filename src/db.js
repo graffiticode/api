@@ -102,7 +102,6 @@ function postItem(language, src, ast, obj, user, parent, img, label, forkID, res
   img = cleanAndTrimObj(img);
   src = cleanAndTrimSrc(src);
   ast = cleanAndTrimSrc(JSON.stringify(ast));
-
   var queryStr =
     "INSERT INTO pieces (address, fork_id, user_id, parent_id, views, forks, created, src, obj, language, label, img, ast)" +
     " VALUES ('" + global.clientAddress + "','" + forkID + "','" + user + "','" + parent + " ','" + views + " ','" + forks + "',now(),'" + src + "','" + obj + "','" + language + "','" +
@@ -129,7 +128,6 @@ function postItem(language, src, ast, obj, user, parent, img, label, forkID, res
   });
 }
 
-// Commit and return commit id
 function updateItem(id, language, src, ast, obj, img, resume) {
   var views = 0;
   var forks = 0;

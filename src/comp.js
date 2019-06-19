@@ -4,7 +4,7 @@ const {dbQuery, getItem, updateAST, updateOBJ} = require('./db.js');
 const {delCache, getCache, setCache} = require('./cache.js');
 const {pingLang, getCompilerVersion, getCompilerHost, getCompilerPort} = require('./lang.js');
 const {parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./utils.js');
-const main = require('./main.js');
+const parser = require('./parser.js');
 
 const nilID = encodeID([0,0,0]);
 
@@ -261,13 +261,13 @@ const lexiconCache = {};
 function parse(lang, src, resume) {
   let lexicon;
   if ((lexicon = lexiconCache[lang])) {
-    main.parse(src, lexicon, resume);
+    parser.parse(src, lexicon, resume);
   } else {
     get(lang, "lexicon.js", function (err, data) {
       const lstr = data.substring(data.indexOf("{"));
       lexicon = JSON.parse(lstr);
       lexiconCache[lang] = lexicon;
-      main.parse(src, lexicon, resume);
+      parser.parse(src, lexicon, resume);
     });
   }
 }
