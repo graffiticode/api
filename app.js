@@ -105,6 +105,7 @@ if (!module.parent) {
   });
 }
 
+app.use('/', routes.root());
 app.use('/items', routes.items(authToken, getItems));
 app.use('/form', routes.form(authToken, getForm));
 app.use('/code', routes.code(authToken, getCode, putCode));

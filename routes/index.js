@@ -1,3 +1,4 @@
+module.exports.root = require('./root');
 module.exports.items = require('./items');
 module.exports.form = require('./form');
 module.exports.data = require('./data');
