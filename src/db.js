@@ -33,6 +33,7 @@ function dbQuery(query) {
         client.query(query, function (err, result) {
           done();
           if (err) {
+            console.log("[2] dbQuery err=" + err);
             reject(err + ": " + query);
           } else {
             if (!result) {
@@ -44,7 +45,7 @@ function dbQuery(query) {
           }
         });
       } catch (e) {
-        console.log("ERROR [2] dbQuery() e=" + e);
+        console.log("ERROR [3] dbQuery() e=" + e);
         done();
         reject(e);
       }
@@ -53,32 +54,15 @@ function dbQuery(query) {
 }
 
 function dbQueryAsync(query, resume) {
-  let conString = getConStr(0);
-  pg.connect(conString, function (err, client, done) {
-    // If there is an error, client is null and done is a noop
-    if (err) {
-      console.log("ERROR [1] dbQueryAsync() err=" + err);
-      return resume(err, {});
-    }
-    try {
-      client.query(query, function (err, result) {
-        done();
-        if (err) {
-          throw new Error(err + ": " + query);
-        }
-        if (!result) {
-          result = {
-            rows: [],
-          };
-        }
-        return resume(err, result);
-      });
-    } catch (e) {
-      console.log("ERROR [2] dbQueryAsync() e=" + e);
-      done();
-      return resume(e);
-    }
-  });
+  dbQuery(query)
+    .then(val => {
+      resume(null, val)
+    })
+    .catch(err => {
+      console.log("dbQueryAsync() err=" + JSON.stringify(err));
+      console.trace();
+      resume(err)
+    });
 }
 
 function updateAST(id, ast, resume) {
@@ -106,9 +90,9 @@ function updateOBJ(id, obj, resume) {
     "UPDATE pieces SET " +
     "obj='" + obj + "' " +
     "WHERE id='" + id + "'";
-  dbQueryAsync(query, function (err) {
-    resume(err, []);
-  });
+  dbQuery(query)
+    .then(val => resume(null, val))
+    .catch(err => resume(err));
 }
 
 function getItem(itemID, resume) {
@@ -129,7 +113,6 @@ function getItem(itemID, resume) {
     });
 }
 
-
 // Commit and return commit id
 function postItem(language, src, ast, obj, user, parent, img, label, forkID, resume) {
   parent = decodeID(parent)[1];
@@ -144,26 +127,27 @@ function postItem(language, src, ast, obj, user, parent, img, label, forkID, res
     "INSERT INTO pieces (address, fork_id, user_id, parent_id, views, forks, created, src, obj, language, label, img, ast)" +
     " VALUES ('" + global.clientAddress + "','" + forkID + "','" + user + "','" + parent + " ','" + views + " ','" + forks + "',now(),'" + src + "','" + obj + "','" + language + "','" +
     label + "','" + img + "','" + ast + "');"
-  dbQueryAsync(queryStr, function(err, result) {
-    if (err) {
-      console.log("ERROR postItem() " + queryStr);
-      resume(err);
-    } else {
+  dbQuery(queryStr)
+    .then(result => {
       var queryStr = "SELECT * FROM pieces ORDER BY id DESC LIMIT 1";
-      dbQueryAsync(queryStr, function (err, result) {
-        let codeID = +result.rows[0].id;
-        forkID = forkID || codeID;
-        var query =
-          "UPDATE pieces SET " +
-          "fork_id=" + forkID + " " +
-          "WHERE id=" + codeID;
-        dbQueryAsync(query, function (err) {
-          resume(err, result);
-          dbQueryAsync("UPDATE pieces SET forks=forks+1 WHERE id=" + parent, () => {});
-        });
-      });
-    }
-  });
+      return dbQuery(queryStr);
+    })
+    .then(result => {
+      resume(null, result);
+      // Do some bookkeeping.
+      let codeID = result.rows[0].id;
+      forkID = forkID || codeID;
+      var queryStr =
+        "UPDATE pieces SET " +
+        "fork_id=" + forkID + " " +
+        "WHERE id=" + codeID;
+      dbQuery(queryStr);
+      return dbQuery("UPDATE pieces SET forks=forks+1 WHERE id=" + parent);
+    })
+    .catch(err => {
+      console.log("ERROR postItem()");
+      resume(err);
+    });
 }
 
 function updateItem(id, language, src, ast, obj, img, resume) {
@@ -231,7 +215,6 @@ function getItems(req, res) {
                     selection.push(row);
                   }
                 });
-                console.log("GET /items selection=" + JSON.stringify(selection));
                 res.send(selection)
               });
     } else {
@@ -240,7 +223,6 @@ function getItems(req, res) {
   });
   req.on('error', function(e) {
     console.log("[10] ERROR " + e);
-    console.log("ERROR [2] GET /items err=" + err);
     res.sendStatus(400);
   });
 }
