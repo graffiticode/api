@@ -271,4 +271,50 @@ function parse(lang, src, resume) {
   }
 }
 
+function getIDFromType(type) {
+  switch (type) {
+  default:
+    return null;
+  }
+}
+function batchCompile(auth, items, resume, index) {
+  index = +index || 0;
+  // For each item, get the dataID and concat with codeID of alias.
+  if (index < items.length) {
+    res && res.write(" ");
+    let t0 = new Date;
+    let item = items[index];
+    let codeID = item.id || getIDFromType(item.type);
+    let data = item.data;
+    putData(auth, data, (err, dataID) => {
+      let codeIDs = decodeID(codeID);
+      let dataIDs = decodeID(dataID);
+      let id = encodeID(codeIDs.slice(0,2).concat(dataIDs));
+      item.id = id;
+      item.image_url = "https://cdn.acx.ac/" + id + ".png";
+      delete item.data;
+      compileID(auth, id, {refresh: DEBUG}, (err, obj) => {
+        item.data = obj;
+        batchCompile(auth, items, resume, index + 1);
+        console.log("COMPILE " + (index + 1) + "/" + items.length + ", " + id + " in " + (new Date - t0) + "ms");
+      });
+    });
+  } else {
+    resume(null, items);
+  }
+}
+
+function compile(auth, items) {
+  return new Promise((accept, reject) => {
+    batchCompile(auth, items, (err, val) => {
+      if (err) {
+        reject(err);
+      } else {
+        accept(val);
+      }
+    });
+  });
+}
+
 exports.compileID = compileID;
+exports.compile = compile;
