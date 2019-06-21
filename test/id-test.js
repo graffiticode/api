@@ -1,7 +1,29 @@
 const { expect } = require('chai');
-const { decodeID, encodeID } = require('./../src/id');
-
+const { decodeID, encodeID, codeToID, codeFromID } = require('./../src/id');
 describe('id', () => {
+  describe('codeToID', () => {
+    it('should return 1 when given {}', () => {
+      codeToID({})
+        .then(val => {
+          expect(val).to.equal(1);
+        })
+        .catch(val => {
+          expect(false).to.equal(true);
+        });
+    });
+  });
+  describe('codeFromID', () => {
+    it('should return {} when given 1', () => {
+      codeFromID(1)
+        .then(val => {
+          console.log("codeFromID typeof val=" + typeof val);
+          expect(val).to.eql({});
+        })
+        .catch(val => {
+          expect(false).to.equal(true);
+        });
+    });
+  });
   describe('decodeID', () => {
     function expectIds(ids, ...params) {
       expect(ids).to.have.length(params.length);
@@ -9,7 +31,6 @@ describe('id', () => {
         expect(ids[i]).to.equal(params[i]);
       }
     }
-
     it('should return 0 when no ID', () => {
       const ids = decodeID();
       expectIds(ids, 0, 0, 0);

@@ -227,6 +227,7 @@ function getItems(req, res) {
   });
 }
 
+exports.dbQuery = dbQuery;
 exports.dbQueryAsync = dbQueryAsync;
 exports.updateAST = updateAST;
 exports.updateOBJ = updateOBJ;
@@ -234,4 +235,4 @@ exports.getItem = getItem;
 exports.postItem = postItem;
 exports.updateItem = updateItem;
 exports.getItems = getItems;
-
+exports.cleanAndTrimSrc = cleanAndTrimSrc;
