@@ -1,9 +1,9 @@
 const { Router } = require('express');
-const { isNonEmptyString } = require('./../src/utils');
-module.exports = (auth, sendData) => {
+const { getComp } = require('../src/comp');
+module.exports = (auth) => {
   const router = new Router();
   router.get('/', (req, res) => {
-    res.sendStatus(200);
+    getComp(auth, req.query.id, req, res);
   });
   return router;
 };

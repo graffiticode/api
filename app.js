@@ -12,12 +12,8 @@ const {decodeID, encodeID} = require('./src/id.js');
 const {dbQueryAsync, getItems, getItem, postItem, updateItem, updateAST, updateOBJ} = require('./src/db.js');
 const {delCache, getCache, setCache} = require('./src/cache.js');
 const {compileID} = require('./src/comp.js');
-const {pingLang, getCompilerVersion, getCompilerHost, getCompilerPort} = require('./src/lang.js');
-const {parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./src/utils.js');
+const {pingLang, getCompilerVersion, getCompilerHost, getCompilerPort, parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./src/utils.js');
 const {postAuth} = require('./src/auth.js');
-const {getCode, putCode} = require('./src/code.js');
-const {getData, putData} = require('./src/data.js');
-const {getForm} = require('./src/form.js');
 
 const app = module.exports = express();
 
@@ -51,7 +47,6 @@ app.all('*', function (req, res, next) {
   }
 });
 
-app.set('views', __dirname + '/views');
 app.use(morgan('combined', {
   skip: function (req, res) { return res.statusCode < 400 }
 }));
@@ -66,12 +61,6 @@ app.use('/lib', express.static(__dirname + '/lib'));
 app.use(function (err, req, res, next) {
   console.error(err.stack)
   res.sendStatus(500);
-});
-app.engine('html', function (templateFile, options, callback) {
-  fs.readFile(templateFile, function (err, templateData) {
-    var template = _.template(String(templateData));
-    callback(err, template(options))
-  });
 });
 
 // Routes
@@ -105,38 +94,7 @@ if (!module.parent) {
   });
 }
 
-app.use('/', routes.root());
-app.use('/items', routes.items(authToken, getItems));
-app.use('/form', routes.form(authToken, getForm));
-app.use('/code', routes.code(authToken, getCode, putCode));
-app.use('/data', routes.data(authToken, getData));
-app.use('/d', routes.d(authToken, getData));
-
-app.get("/:lang/*", function (req, response) {
-  // /L106/lexicon.js
-  let lang = req.params.lang;
-  pingLang(lang, pong => {
-    if (pong) {
-      let url = req.url;
-      let path = url.substring(url.indexOf(lang) + lang.length + 1);
-      var data = [];
-      var options = {
-        host: getCompilerHost(lang, config),
-        port: getCompilerPort(lang, config),
-        path: "/" + path,
-      };
-      req = protocol.get(options, function(res) {
-        res.on("data", function (chunk) {
-          data.push(chunk);
-        }).on("end", function () {
-          response.send(data.join(""));
-        });
-      });
-    } else {
-      response.sendStatus(404);
-    }
-  });
-});
+app.use('/comp', routes.comp(authToken));
 
 dbQueryAsync("SELECT NOW() as when", (err, result) => {
   if (err) {

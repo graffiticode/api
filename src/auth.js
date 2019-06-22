@@ -38,5 +38,4 @@ function postAuth(path, data, resume) {
     resume(err);
   });
 }
-
 exports.postAuth = postAuth;

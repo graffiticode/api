@@ -80,17 +80,15 @@ function encodeID(ids) {
 function codeToID(code) {
   return new Promise((accept, reject) => {
     let ast = cleanAndTrimSrc(JSON.stringify(code));
-    let sql = "SELECT id FROM ids WHERE ast='" + ast + "';";
+    let sql = "SELECT id FROM asts WHERE ast='" + ast + "';";
     dbQuery(sql)
       .then(val => {
-        console.log("[1] codeToID() id=" + JSON.stringify(val.rows[0].id));
         if (val.rows.length) {
           accept(+val.rows[0].id || 0);
         } else {
-          let sql = "INSERT INTO ids (ast) VALUES ('" + ast + "');"
+          let sql = "INSERT INTO asts (ast) VALUES ('" + ast + "');"
           dbQuery(sql)
             .then(val => {
-              console.log("[2] codeToID() val=" + JSON.stringify(val));
               accept(+val.rows[0].id);
             })
             .catch (err => {
@@ -106,7 +104,7 @@ function codeToID(code) {
 
 function codeFromID(id) {
   return new Promise((accept, reject) => {
-    let sql = "SELECT ast FROM ids WHERE id='" + id + "';";
+    let sql = "SELECT ast FROM asts WHERE id='" + id + "';";
     dbQuery(sql)
       .then(val => {
         accept(val.rows[0].ast || null);

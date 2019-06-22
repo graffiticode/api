@@ -7,7 +7,7 @@ describe('id', () => {
         .then(val => {
           expect(val).to.equal(1);
         })
-        .catch(val => {
+        .catch(err => {
           expect(false).to.equal(true);
         });
     });
@@ -16,10 +16,9 @@ describe('id', () => {
     it('should return {} when given 1', () => {
       codeFromID(1)
         .then(val => {
-          console.log("codeFromID typeof val=" + typeof val);
           expect(val).to.eql({});
         })
-        .catch(val => {
+        .catch(err => {
           expect(false).to.equal(true);
         });
     });
