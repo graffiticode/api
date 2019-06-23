@@ -262,6 +262,15 @@ function nodeToJSON(n) {
 }
 
 function compile(auth, item) {
+  // item = {
+  //   id | type | code
+  //   data
+  // }
+  // where
+  //   id is the ID of an AST in the AST store,
+  //   type is a type string that is mapped to an ID by getIDFromType,
+  //   code is an AST which may or may not be in the AST store, and
+  //   data is a JSON object passed with the code to the compiler.
   return new Promise(async (accept, reject) => {
     let t0 = new Date;
     let codeID =

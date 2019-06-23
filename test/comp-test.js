@@ -10,7 +10,7 @@ global.protocol = http; // Default. Set to http if localhost.
 
 describe('comp', () => {
   describe('compile', () => {
-    it('should return 2 for "hello, world!" AST', async () => {
+    it('mapping an AST to an ID', async () => {
       expect(
         await codeToID({
           "1":{"tag":"STR","elts":["hello, world!"]},

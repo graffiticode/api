@@ -2,26 +2,28 @@ const { expect } = require('chai');
 const { decodeID, encodeID, codeToID, codeFromID } = require('./../src/id');
 describe('id', () => {
   describe('codeToID', () => {
-    it('should return 1 when given {}', () => {
-      codeToID({})
-        .then(val => {
-          expect(val).to.equal(1);
-        })
-        .catch(err => {
-          expect(false).to.equal(true);
-        });
-    });
+    it('should return 1 when given {}', async () => {
+      expect(
+        await codeToID({})
+      ).to.equal(1)
+    })
   });
   describe('codeFromID', () => {
-    it('should return {} when given 1', () => {
-      codeFromID(1)
-        .then(val => {
-          expect(val).to.eql({});
-        })
-        .catch(err => {
-          expect(false).to.equal(true);
-        });
-    });
+    it('getting ID for code {}', async () => {
+      expect(
+        await codeFromID(1)
+      ).to.eql({})
+    })
+    it('getting code for ID=2', async () => {
+      expect(
+        await codeFromID(2)
+      ).to.eql({
+        "1":{"tag":"STR","elts":["hello, world!"]},
+        "2":{"tag":"EXPRS","elts":[1]},
+        "3":{"tag":"PROG","elts":[2]},
+        "root":3,
+        "version":"1"})
+    })
   });
   describe('decodeID', () => {
     function expectIds(ids, ...params) {
