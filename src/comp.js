@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {decodeID, encodeID} = require('./id.js');
+const {decodeID, encodeID, codeToID, codeFromID} = require('./id.js');
 const {dbQueryAsync, getItem, updateAST, updateOBJ} = require('./db.js');
 const {delCache, getCache, setCache} = require('./cache.js');
 const {pingLang, getCompilerVersion, getCompilerHost, getCompilerPort, parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./utils.js');
@@ -11,9 +11,14 @@ function getLang(ids, resume) {
 }
 
 function getCode(ids, resume) {
-  getAST(ids[1], (err, ast) => {
-    resume(err, ast);
-  });
+  codeFromID(ids[1])
+    .then(val => {
+      resume(null, val);
+    })
+    .catch(err => {
+      console.trace();
+      resume(err);
+    });
 }
 
 function getData(auth, ids, refresh, resume) {
@@ -41,7 +46,6 @@ function compileID(auth, id, options, resume) {
         // Got cached value. We're done.
         resume(err, val);
       } else {
-        countView(ids[1]);  // Count every time code is used to compile a new item.
         getData(auth, ids, refresh, (err, data) => {
           getCode(ids, (err, code) => {
             if (err && err.length) {
@@ -51,56 +55,16 @@ function compileID(auth, id, options, resume) {
                 if (err && err.length) {
                   resume(err, null);
                 } else {
-                  if (lang === "L113" && Object.keys(data).length === 0) {
-                    // No need to recompile.
-                    getItem(ids[1], (err, item) => {
-                      if (err && err.length) {
-                        resume(err, null);
-                      } else {
-                        try {
-                          let obj = JSON.parse(item.obj);
-                          setCache(lang, id, "data", obj);
-                          resume(err, obj);
-                        } catch (e) {
-                          // Oops. Missing or invalid obj, so need to recompile after all.
-                          // Let downstream compilers know they need to refresh
-                          // any data used. Prefer true over false.
-                          comp(auth, lang, code, data, options, (err, obj) => {
-                            if (err) {
-                              resume(err);
-                            } else {
-                              setCache(lang, id, "data", obj);
-                              resume(null, obj);
-                            }
-                          });
-                        }
-                      }
-                    });
-                  } else {
-                    if (lang && code) {
-                      assert(code.root !== undefined, "Invalid code for item " + ids[1]);
-                      // Let downstream compilers know they need to refresh
-                      // any data used.
-                      comp(auth, lang, code, data, options, (err, obj) => {
-                        if (err) {
-                          resume(err);
-                        } else {
-                          if (!dontSave) {
-                            setCache(lang, id, "data", obj);
-                            if (ids[2] === 0 && ids.length === 3) {
-                              // If this is pure code, then update OBJ.
-                              updateOBJ(ids[1], obj, (err)=>{ assert(!err) });
-                            }
-                          }
-                          resume(null, obj);
-                        }
-                      });
+                  assert(code && code.root !== undefined, "Invalid code for item " + ids[1]);
+                  // Let downstream compilers know they need to refresh
+                  // any data used.
+                  comp(auth, lang, code, data, options, (err, obj) => {
+                    if (err) {
+                      resume(err);
                     } else {
-                      // Error handling here.
-                      console.log("ERROR compileID() ids=" + ids + " missing code");
-                      resume(null, {});
+                      resume(null, obj);
                     }
-                  }
+                  });
                 }
               });
             }
@@ -188,20 +152,129 @@ function getIDFromType(type) {
   }
 }
 
-// TODO
-// -- Implement jsonToAST() to create an AST from a JSON value.
-// -- Call codeToID(jsonToAST(data)) to get a codeID.
+let nodePool;
+let nodeMap;
+
+function intern(n) {
+  if (!n) {
+    return 0;
+  }
+  var tag = n.tag;
+  var elts = "";
+  var elts_nids = [ ];
+  var count = n.elts.length;
+  for (var i = 0; i < count; i++) {
+    if (typeof n.elts[i] === "object") {
+      n.elts[i] = intern(ctx, n.elts[i]);
+    }
+    elts += n.elts[i];
+  }
+  var key = tag+count+elts;
+  var nid = nodeMap[key];
+  if (nid === void 0) {
+    nodePool.push({tag: tag, elts: n.elts});
+    nid = nodePool.length - 1;
+    nodeMap[key] = nid;
+    if (n.coord) {
+      ctx.state.coords[nid] = n.coord;
+    }
+  }
+  return nid;
+}
+
+function newNode(tag, elts) {
+  return {
+    tag: tag,
+    elts: elts,
+  }
+};
+const NULL = "NULL";
+const STR = "STR";
+const NUM = "NUM";
+const BOOL = "BOOL";
+const LIST = "LIST";
+const RECORD = "RECORD";
+const BINDING = "BINDING";
+
+function jsonChildToCode(data) {
+  let type = typeof data;
+  let tag =
+    data === null && NULL ||
+    type === "string" && STR ||
+    type === "number" && NUM ||
+    type === "boolean" && BOOL ||
+    Array.isArray(data) && LIST ||
+    type === "object" && RECORD;
+  let elts = [];
+  if (tag === LIST || tag == RECORD) {
+    Object.keys(data).forEach(k => {
+      elts.push(intern(jsonToCode(data[k])));
+    })
+  } else {
+    elts.push(data);
+  }
+  let node = intern(newNode(tag, elts));
+  return node;
+}
+
+function jsonToCode(data) {
+  nodePool = ["unused"];
+  nodeMap = {};
+  jsonChildToCode(data);
+  let node = poolToJSON();
+  return node;
+}
+
+function poolToJSON() {
+  var obj = { };
+  for (var i=1; i < nodePool.length; i++) {
+    var n = nodePool[i];
+    obj[i] = nodeToJSON(n);
+  }
+  obj.root = (nodePool.length-1);
+  return obj;
+}
+
+function nodeToJSON(n) {
+  if (typeof n === "object") {
+    switch (n.tag) {
+    case "num":
+      var obj = n.elts[0];
+      break;
+    case "str":
+      var obj = n.elts[0];
+      break;
+    default:
+      var obj = {};
+      obj["tag"] = n.tag;
+      obj["elts"] = [];
+      for (var i=0; i < n.elts.length; i++) {
+        obj["elts"][i] = nodeToJSON(n.elts[i]);
+      }
+      break;
+    }
+  } else if (typeof n === "string") {
+    var obj = n;
+  } else {
+    var obj = n;
+  }
+  return obj;
+}
+
 function compile(auth, item) {
-  return new Promise((accept, reject) => {
+  return new Promise(async (accept, reject) => {
     let t0 = new Date;
-    let codeID = item.id || getIDFromType(item.type);
+    let codeID =
+      item.id ||
+      item.type && getIDFromType(item.type) ||
+      item.code && codeToID(code);
     let data = item.data;
-    let dataID = codeToID(jsonToAST(data));
+    let dataID = await codeToID(jsonToCode(data));
     let codeIDs = decodeID(codeID);
-    let dataIDs = decodeID(dataID);
+    let dataIDs = [113, dataID, 0];
     let id = encodeID(codeIDs.slice(0,2).concat(dataIDs));
-    compileID(auth, id, {refresh: DEBUG}, (err, obj) => {
-      console.log("COMPILE " + id + " in " + (new Date - t0) + "ms");
+    compileID(auth, id, {}, (err, obj) => {
+      // console.log("COMPILE " + id + " in " + (new Date - t0) + "ms");
       if (err) {
         reject(err);
       } else {

@@ -14,7 +14,7 @@ function getCompilerHost(lang, config) {
   if (config && config.hosts && config.hosts.get(lang)) {
     return config.hosts.get(lang);
   }
-  if (config && config.isLocalCompiler) {
+  if (config && config.isLocalCompiles) {
     return 'localhost';
   }
   return `${lang}.artcompiler.com`;
@@ -24,7 +24,7 @@ function getCompilerPort(lang, config) {
   if (config.ports && config.ports.get(lang)) {
     return config.ports.get(lang);
   }
-  if (config.isLocalCompiler) {
+  if (config.isLocalCompiles) {
     return `5${lang.substring(1)}`;
   }
   return '80';
@@ -119,10 +119,11 @@ function getCompilerVersion(lang, resume) {
 }
 
 function pingLang(lang, resume) {
+  let config = {isLocalCompiles: true};
   let options = {
     method: 'HEAD',
-    host: getCompilerHost(lang, global.config),
-    port: getCompilerPort(lang, global.config),
+    host: getCompilerHost(lang, config),
+    port: getCompilerPort(lang, config),
     path: '/'
   };
   req = global.protocol.request(options, function(r) {
@@ -138,8 +139,6 @@ exports.getCompilerVersion = getCompilerVersion;
 exports.getCompilerHost = getCompilerHost;
 exports.getCompilerPort = getCompilerPort;
 exports.isNonEmptyString = isNonEmptyString;
-exports.getCompilerHost = getCompilerHost;
-exports.getCompilerPort = getCompilerPort;
 exports.parseJSON = parseJSON;
 exports.cleanAndTrimObj = cleanAndTrimObj;
 exports.cleanAndTrimSrc = cleanAndTrimSrc;

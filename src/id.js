@@ -107,9 +107,10 @@ function codeFromID(id) {
     let sql = "SELECT ast FROM asts WHERE id='" + id + "';";
     dbQuery(sql)
       .then(val => {
-        accept(val.rows[0].ast || null);
+        accept(val.rows[0].ast);
       })
       .catch(err => {
+        console.log("codeFromID() id=" + id + " err=" + JSON.stringify(err));
         reject(err);
       });
   });

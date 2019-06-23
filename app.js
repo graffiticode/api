@@ -21,7 +21,7 @@ const app = module.exports = express();
 const DEBUG = process.env.DEBUG_GRAFFITICODE === 'true' || false;
 const LOCAL_COMPILES = process.env.LOCAL_COMPILES === 'true' || false;
 const CONFIG = global.config = {
-  isLocalCompiles: LOCAL_COMPILES,
+  isLocalCompilers: LOCAL_COMPILES,
 };
 var env = process.env.NODE_ENV || 'development';
 
