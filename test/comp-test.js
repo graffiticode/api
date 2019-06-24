@@ -6,8 +6,8 @@ const http = require('http');
 global.config = {
   isLocalCompilers: LOCAL_COMPILES,
 };
+const TIMEOUT_DURATION = 5000;
 global.protocol = http;
-
 describe('comp', () => {
   describe('compile', () => {
     it('mapping an AST to an ID', async () => {
@@ -27,5 +27,5 @@ describe('comp', () => {
           data: {},
         })).to.equal("hello, world!");
     });
-  });
+  }).timeout(TIMEOUT_DURATION);
 });
