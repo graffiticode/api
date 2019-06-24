@@ -9,13 +9,8 @@
     "url": "https://github.com/graffiticode/api"
   },
   "dependencies": {
-    "atob": "2.1.1",
     "aws-sdk": "2.286.2",
     "body-parser": "latest",
-    "connect-timeout": "latest",
-    "cookie-parser": "latest",
-    "csv2json": "^1.4.2",
-    "d3": "^4.13.0",
     "errorhandler": "latest",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
@@ -23,11 +18,8 @@
     "method-override": "latest",
     "morgan": "latest",
     "pg": "6.1.6",
-    "qs": "latest",
     "redis": "2.6.3",
-    "request": "^2.88.0",
-    "stylus": "latest",
-    "underscore": "1.4.x"
+    "request": "^2.88.0"
   },
   "engines": {
     "node": "9.0.0"
@@ -46,11 +38,12 @@
     "react": "0.14.5",
     "react-dom": "0.14.5",
     "supertest": "^4.0.2",
+    "tsc": "^1.20150623.0",
     "uglify-js": "^2.7.3"
   },
   "scripts": {
     "start": "node app.js",
     "test": "mocha --reporter spec --recursive",
-    "build": "tsc --esModuleInterop --allowJS --outDir lib src/*.js"
+    "build": "tsc --outDir lib src/*.js"
   }
 }

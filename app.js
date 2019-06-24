@@ -1,20 +1,13 @@
-const _ = require('underscore');
 const bodyParser = require("body-parser");
 const errorHandler = require("errorhandler");
 const express = require('express');
-const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const methodOverride = require("method-override");
 const morgan = require("morgan");
 const routes = require('./routes');
-const {decodeID, encodeID} = require('./src/id.js');
-const {dbQueryAsync, getItems, getItem, postItem, updateItem, updateAST, updateOBJ} = require('./src/db.js');
-const {delCache, getCache, setCache} = require('./src/cache.js');
-const {compileID} = require('./src/comp.js');
-const {pingLang, getCompilerVersion, getCompilerHost, getCompilerPort, parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./src/utils.js');
+const {dbQueryAsync} = require('./src/db.js');
 const {postAuth} = require('./src/auth.js');
-
 const app = module.exports = express();
 
 // Configuration
@@ -27,14 +20,8 @@ var env = process.env.NODE_ENV || 'development';
 
 global.protocol = http; // Default. Set to http if localhost.
 
-// http://stackoverflow.com/questions/7013098/node-js-www-non-www-redirection
-// http://stackoverflow.com/questions/7185074/heroku-nodejs-http-to-https-ssl-forced-redirect
 app.all('*', function (req, res, next) {
   if (req.headers.host.match(/^localhost/) === null) {
-    // if (req.headers.host.match(/^www/) === null) {
-    //   console.log("app.all redirecting headers=" + JSON.stringify(req.headers, null, 2) + " url=" + req.url);
-    //   res.redirect('https://www.'+ req.headers.host + req.url);
-    // } else
     if (req.headers['x-forwarded-proto'] !== 'https' && env === 'production') {
       console.log("app.all redirecting headers=" + JSON.stringify(req.headers, null, 2) + " url=" + req.url);
       res.redirect(['https://', req.headers.host, req.url].join(''));
