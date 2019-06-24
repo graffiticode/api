@@ -94,6 +94,7 @@ if (!module.parent) {
   });
 }
 
+app.use('/', routes.root());
 app.use('/comp', routes.comp(authToken));
 
 dbQueryAsync("SELECT NOW() as when", (err, result) => {

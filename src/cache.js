@@ -1,5 +1,4 @@
 const cache = null; // = redis.createClient(process.env.REDIS_URL);
-
 const DEBUG = process.env.DEBUG_GRAFFITICODE === 'true' || false;
 
 const localCache = {};
@@ -26,7 +25,6 @@ function getCache (id, type, resume) {
     resume(null, null);
   }
 }
-
 
 function setCache (lang, id, type, val) {
   if (!DEBUG && !dontCache.includes(lang)) {
@@ -69,11 +67,8 @@ function getKeys (filter, resume) {
   cache.keys(filter, resume);
 }
 
-
-
 exports.delCache = delCache;
 exports.getCache = getCache;
 exports.setCache = setCache;
 exports.clrCache = clrCache;
 exports.renCache = renCache;
-

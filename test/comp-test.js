@@ -6,7 +6,7 @@ const http = require('http');
 global.config = {
   isLocalCompilers: LOCAL_COMPILES,
 };
-global.protocol = http; // Default. Set to http if localhost.
+global.protocol = http;
 
 describe('comp', () => {
   describe('compile', () => {

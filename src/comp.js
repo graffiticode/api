@@ -1,6 +1,6 @@
 const assert = require('assert');
 const {decodeID, encodeID, codeToID, codeFromID} = require('./id.js');
-const {dbQueryAsync, getItem, updateAST, updateOBJ} = require('./db.js');
+const {dbQueryAsync, updateAST, updateOBJ} = require('./db.js');
 const {delCache, getCache, setCache} = require('./cache.js');
 const {pingLang, getCompilerVersion, getCompilerHost, getCompilerPort, parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./utils.js');
 
@@ -263,14 +263,14 @@ function nodeToJSON(n) {
 
 function compile(auth, item) {
   // item = {
-  //   id | type | code
+  //   id | type | code,
   //   data
   // }
   // where
   //   id is the ID of an AST in the AST store,
   //   type is a type string that is mapped to an ID by getIDFromType,
   //   code is an AST which may or may not be in the AST store, and
-  //   data is a JSON object passed with the code to the compiler.
+  //   data is a JSON object to be passed with the code to the compiler.
   return new Promise(async (accept, reject) => {
     let t0 = new Date;
     let codeID =
