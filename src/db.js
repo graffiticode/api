@@ -1,7 +1,4 @@
-const {parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./utils.js');
-const {decodeID, encodeID} = require('./id.js');
 var pg = require('pg');
-
 const DEV = process.env.DEV_GRAFFITICODE === 'true' || false;
 const LOCAL_DATABASE = process.env.LOCAL_DATABASE === 'true' || false;
 if (LOCAL_DATABASE) {
@@ -53,86 +50,4 @@ function dbQuery(query) {
   });
 }
 
-function dbQueryAsync(query, resume) {
-  dbQuery(query)
-    .then(val => {
-      resume(null, val)
-    })
-    .catch(err => {
-      console.log("dbQueryAsync() err=" + JSON.stringify(err));
-      console.trace();
-      resume(err)
-    });
-}
-
-function updateAST(id, ast, resume) {
-  ast = cleanAndTrimSrc(JSON.stringify(ast));
-  var query =
-    "UPDATE item SET " +
-    "ast='" + ast + "' " +
-    "WHERE id='" + id + "'";
-  dbQuery(query)
-    .then(
-      () => {
-        resume(null, []);
-      })
-    .catch(err => {
-      if (err && err.length) {
-        console.log("ERROR updateAST() err=" + err);
-      }
-      resume(err, []);
-    });
-}
-
-function getAST(id, resume) {
-  dbQuery("SELECT ast FROM asts WHERE id=" + id)
-    .then(val => {
-      resume(null, val.rows[0].ast);
-    })
-    .catch(err => {
-      resume(err);
-    });
-}
-
-// Commit and return commit id
-function postItem(language, src, ast, obj, user, parent, img, label, forkID, resume) {
-  parent = decodeID(parent)[1];
-  // ast is a JSON object
-  var forks = 0;
-  var views = 0;
-  obj = cleanAndTrimObj(obj);
-  img = cleanAndTrimObj(img);
-  src = cleanAndTrimSrc(src);
-  ast = cleanAndTrimSrc(JSON.stringify(ast));
-  var queryStr =
-    "INSERT INTO pieces (address, fork_id, user_id, parent_id, views, forks, created, src, obj, language, label, img, ast)" +
-    " VALUES ('" + global.clientAddress + "','" + forkID + "','" + user + "','" + parent + " ','" + views + " ','" + forks + "',now(),'" + src + "','" + obj + "','" + language + "','" +
-    label + "','" + img + "','" + ast + "');"
-  dbQuery(queryStr)
-    .then(result => {
-      var queryStr = "SELECT * FROM pieces ORDER BY id DESC LIMIT 1";
-      return dbQuery(queryStr);
-    })
-    .then(result => {
-      resume(null, result);
-      // Do some bookkeeping.
-      let codeID = result.rows[0].id;
-      forkID = forkID || codeID;
-      var queryStr =
-        "UPDATE pieces SET " +
-        "fork_id=" + forkID + " " +
-        "WHERE id=" + codeID;
-      dbQuery(queryStr);
-      return dbQuery("UPDATE pieces SET forks=forks+1 WHERE id=" + parent);
-    })
-    .catch(err => {
-      console.log("ERROR postItem()");
-      resume(err);
-    });
-}
-
 exports.dbQuery = dbQuery;
-exports.dbQueryAsync = dbQueryAsync;
-exports.updateAST = updateAST;
-exports.cleanAndTrimSrc = cleanAndTrimSrc;
-exports.getAST = getAST;
