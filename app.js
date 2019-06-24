@@ -85,16 +85,16 @@ app.use('/', routes.root());
 app.use('/comp', routes.comp(authToken));
 app.use('/lang', routes.lang(authToken));
 
-dbQuery("SELECT NOW() as when")
-  .then (result => {
-    if (result.rows.length > 0) {
-      console.log(`Database Time: ${result.rows[0].when}`);
-    }
-  })
-  .catch(err => {
-    console.error(err.stack);
-    process.exit(1);
-  });
+// dbQuery("SELECT NOW() as when")
+//   .then (result => {
+//     if (result.rows.length > 0) {
+//       console.log(`Database Time: ${result.rows[0].when}`);
+//     }
+//   })
+//   .catch(err => {
+//     console.error(err.stack);
+//     process.exit(1);
+//   });
 
 if (process.env.NODE_ENV === 'development') {
   app.use(errorHandler({dumpExceptions: true, showStack: true}))

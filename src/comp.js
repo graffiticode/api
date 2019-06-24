@@ -2,7 +2,8 @@ const assert = require('assert');
 const {decodeID, encodeID, codeToID, codeFromID} = require('./id.js');
 const {dbQueryAsync, updateAST, updateOBJ} = require('./db.js');
 const {delCache, getCache, setCache} = require('./cache.js');
-const {pingLang, getCompilerVersion, getCompilerHost, getCompilerPort, parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./utils.js');
+const {pingLang, getCompilerVersion} = require('./lang.js');
+const {getCompilerHost, getCompilerPort, parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./utils.js');
 
 const nilID = encodeID([0,0,0]);
 
@@ -16,6 +17,7 @@ function getCode(ids, resume) {
       resume(null, val);
     })
     .catch(err => {
+      console.log("getCode() err=" + err);
       console.trace();
       resume(err);
     });

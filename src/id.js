@@ -1,6 +1,7 @@
 const assert = require('assert');
 const Hashids = require('hashids');
-const {dbQuery, cleanAndTrimSrc} = require('./db.js');
+const {dbQuery} = require('./db.js');
+const {cleanAndTrimSrc} = require('./utils.js');
 
 const hashids = new Hashids('Art Compiler LLC');  // This string shall never change!
 
@@ -77,42 +78,29 @@ function encodeID(ids) {
   return id;
 }
 
+function dumpMap(map) {
+  console.log("dumpMap()");
+  map.forEach((val, key) => {
+    console.log(JSON.stringify(key) + " => " + JSON.stringify(val))
+  });
+}
+
+const codeIDMap = new Map([[JSON.stringify({}), 1]]);
+const idCodeMap = new Map([[1, {}]]);
 function codeToID(code) {
   return new Promise((accept, reject) => {
-    let ast = cleanAndTrimSrc(JSON.stringify(code));
-    let sql = "SELECT id FROM asts WHERE ast='" + ast + "';";
-    dbQuery(sql)
-      .then(val => {
-        if (val.rows.length) {
-          accept(+val.rows[0].id || 0);
-        } else {
-          let sql = "INSERT INTO asts (ast) VALUES ('" + ast + "');"
-          dbQuery(sql)
-            .then(val => {
-              accept(+val.rows[0].id);
-            })
-            .catch (err => {
-              reject(err);
-            });
-        }
-      })
-      .catch(err => {
-        reject(err);
-      });
+    if (!codeIDMap.has(JSON.stringify(code))) {
+      let id = idCodeMap.size + 1;
+      codeIDMap.set(JSON.stringify(code), id);
+      idCodeMap.set(id, code);
+    }
+    accept(codeIDMap.get(JSON.stringify(code)));
   });
 }
 
 function codeFromID(id) {
   return new Promise((accept, reject) => {
-    let sql = "SELECT ast FROM asts WHERE id='" + id + "';";
-    dbQuery(sql)
-      .then(val => {
-        accept(val.rows[0].ast);
-      })
-      .catch(err => {
-        console.log("codeFromID() id=" + id + " err=" + JSON.stringify(err));
-        reject(err);
-      });
+    accept(idCodeMap.get(id));
   });
 }
 
