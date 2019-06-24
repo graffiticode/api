@@ -4,7 +4,7 @@ const { encodeID, codeToID } = require('./../src/id');
 const LOCAL_COMPILES = process.env.LOCAL_COMPILES === 'true' || false;
 const http = require('http');
 global.config = {
-  isLocalCompilers: LOCAL_COMPILES,
+  isLocalCompiles: LOCAL_COMPILES,
 };
 const TIMEOUT_DURATION = 5000;
 global.protocol = http;

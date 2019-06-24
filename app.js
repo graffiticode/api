@@ -14,7 +14,7 @@ const app = module.exports = express();
 const DEBUG = process.env.DEBUG_GRAFFITICODE === 'true' || false;
 const LOCAL_COMPILES = process.env.LOCAL_COMPILES === 'true' || false;
 const CONFIG = global.config = {
-  isLocalCompilers: LOCAL_COMPILES,
+  isLocalCompiles: LOCAL_COMPILES,
 };
 var env = process.env.NODE_ENV || 'development';
 
@@ -83,6 +83,7 @@ if (!module.parent) {
 
 app.use('/', routes.root());
 app.use('/comp', routes.comp(authToken));
+app.use('/lang', routes.lang(authToken));
 
 dbQuery("SELECT NOW() as when")
   .then (result => {
