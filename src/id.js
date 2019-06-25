@@ -79,7 +79,6 @@ function encodeID(ids) {
 }
 
 function dumpMap(map) {
-  console.log("dumpMap()");
   map.forEach((val, key) => {
     console.log(JSON.stringify(key) + " => " + JSON.stringify(val))
   });
@@ -89,12 +88,18 @@ const codeIDMap = new Map([[JSON.stringify({}), 1]]);
 const idCodeMap = new Map([[1, {}]]);
 function codeToID(code) {
   return new Promise((accept, reject) => {
-    if (!codeIDMap.has(JSON.stringify(code))) {
-      let id = idCodeMap.size + 1;
-      codeIDMap.set(JSON.stringify(code), id);
-      idCodeMap.set(id, code);
+    let id;
+    if (code === null) {
+      id = 0;
+    } else {
+      if (!codeIDMap.has(JSON.stringify(code))) {
+        let id = idCodeMap.size + 1;
+        codeIDMap.set(JSON.stringify(code), id);
+        idCodeMap.set(id, code);
+      }
+      id = codeIDMap.get(JSON.stringify(code));
     }
-    accept(codeIDMap.get(JSON.stringify(code)));
+    accept(id);
   });
 }
 

@@ -220,6 +220,9 @@ function jsonChildToCode(data) {
 }
 
 function jsonToCode(data) {
+  if (!data || Object.keys(data).length === 0) {
+    return null;
+  }
   nodePool = ["unused"];
   nodeMap = {};
   jsonChildToCode(data);
@@ -278,11 +281,11 @@ function compile(auth, item) {
     let codeID =
       item.id ||
       item.type && getIDFromType(item.type) ||
-      item.code && codeToID(code);
+      item.code && await codeToID(code);
+    let codeIDs = decodeID(codeID);
     let data = item.data;
     let dataID = await codeToID(jsonToCode(data));
-    let codeIDs = decodeID(codeID);
-    let dataIDs = [113, dataID, 0];
+    let dataIDs = dataID === 0 && [0] || [113, dataID, 0];
     let id = encodeID(codeIDs.slice(0,2).concat(dataIDs));
     compileID(auth, id, {}, (err, obj) => {
       // console.log("COMPILE " + id + " in " + (new Date - t0) + "ms");
