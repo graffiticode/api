@@ -1,5 +1,5 @@
 {
-  "name": "graffiticode",
+  "name": "api-graffiticode",
   "version": "0.0.1",
   "description": "Gateway for compilers as a service.",
   "author": "Art Compiler LLC",
