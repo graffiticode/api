@@ -20,14 +20,14 @@ describe('comp', () => {
           "version":"1"})
       ).to.equal(2);
     });
-    it('compiling "hello, world!" from ID', async () => {
+    it('compiling L0 "hello, world!" from ID', async () => {
       expect(
         await compile(undefined, {
           id: encodeID([0, 2, 0]),
           data: {},
         })).to.equal("hello, world!");
     });
-    it('compiling "hello, world!" from code', async () => {
+    it('compiling L0 "hello, world!" from code', async () => {
       expect(
         await compile(undefined, {
           lang: 0,
@@ -41,7 +41,7 @@ describe('comp', () => {
           }, data: {},
         })).to.equal("hello, world!");
     });
-    it('compiling L107 code', async () => {
+    it('compiling L107 sample from code', async () => {
       expect(
         await compile(undefined, {
           lang: 107,
