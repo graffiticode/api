@@ -273,18 +273,20 @@ function compile(auth, item) {
   // }
   // where
   //   id is the ID of an AST in the AST store,
+  //   lang is an integer language identifier,
   //   type is a type string that is mapped to an ID by getIDFromType,
   //   code is an AST which may or may not be in the AST store, and
   //   data is a JSON object to be passed with the code to the compiler.
   return new Promise(async (accept, reject) => {
     let t0 = new Date;
-    let codeID =
-      item.id ||
-      item.type && getIDFromType(item.type) ||
-      item.code && await codeToID(code);
-    let codeIDs = decodeID(codeID);
-    let data = item.data;
-    let dataID = await codeToID(jsonToCode(data));
+    let langID =
+      item.lang ||
+      item.code && item.code.lang;
+    let codeIDs =
+      item.id && decodeID(item.id) ||
+      item.type && decodeID(getIDFromType(item.type)) ||
+      item.code && [langID, await codeToID(item.code), 0];
+    let dataID = await codeToID(jsonToCode(item.data));
     let dataIDs = dataID === 0 && [0] || [113, dataID, 0];
     let id = encodeID(codeIDs.slice(0,2).concat(dataIDs));
     compileID(auth, id, {}, (err, obj) => {
