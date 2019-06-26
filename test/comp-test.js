@@ -41,5 +41,52 @@ describe('comp', () => {
           }, data: {},
         })).to.equal("hello, world!");
     });
+    it('compiling L107 code', async () => {
+      expect(
+        await compile(undefined, {
+          lang: 107,
+          code: {
+            "1":{"tag":"IDENT","elts":["rubric"]},
+            "2":{"tag":"IDENT","elts":["symbolic"]},
+            "3":{"tag":"STR","elts":[" \\frac{3x^3+22x^2+38x+15}{x+5}"]},
+            "4":{"tag":"LIST","elts":[2,3]},
+            "5":{"tag":"IDENT","elts":["in"]},
+            "6":{"tag":"STR","elts":["3x^2+7x+3"]},
+            "7":{"tag":"LIST","elts":[6]},
+            "8":{"tag":"EXPRS","elts":[1,4,5,7]},
+            "9":{"tag":"IN","elts":[7]},
+            "10":{"tag":"IDENT","elts":["IN"]},
+            "11":{"tag":"SYMBOLIC","elts":[3]},
+            "12":{"tag":"IDENT","elts":["SYMBOLIC"]},
+            "13":{"tag":"LIST","elts":[11]},
+            "14":{"tag":"RUBRIC","elts":[13,9]},
+            "15":{"tag":"IDENT","elts":["RUBRIC"]},
+            "16":{"tag":"EXPRS","elts":[14]},
+            "17":{"tag":"PROG","elts":[16]},
+            "root":17,
+            "lang": 107,
+            "version":"0"
+          }, data: {},
+        })).to.eql({
+          "input": [
+            "3x^2+7x+3"
+          ],
+          "score": [
+            {
+              "input": "3x^2+7x+3",
+              "result": true,
+              "validation": {
+                "method": "symbolic",
+                "result": true,
+                "settings": {
+                  "strict": true
+                },
+                "type": "method",
+                "value": " \\frac{3x^3+22x^2+38x+15}{x+5}"
+              }
+            }
+          ]
+        });
+    });
   }).timeout(TIMEOUT_DURATION);
 });
