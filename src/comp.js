@@ -278,7 +278,9 @@ function compile(auth, item) {
   //   code is an AST which may or may not be in the AST store, and
   //   data is a JSON object to be passed with the code to the compiler.
   return new Promise(async (accept, reject) => {
-    let t0 = new Date;
+    if (!item || !item.lang || !item.code || !item.data) {
+      reject("Invalid 'item' passed to 'compile()'");
+    }
     let langID =
       item.lang ||
       item.code && item.code.lang;
@@ -290,7 +292,6 @@ function compile(auth, item) {
     let dataIDs = dataID === 0 && [0] || [113, dataID, 0];
     let id = encodeID(codeIDs.slice(0,2).concat(dataIDs));
     compileID(auth, id, {}, (err, obj) => {
-      // console.log("COMPILE " + id + " in " + (new Date - t0) + "ms");
       if (err) {
         reject(err);
       } else {
