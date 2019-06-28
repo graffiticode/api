@@ -7,7 +7,7 @@ module.exports = (auth) => {
     try {
       let body = typeof req.body === "string" && JSON.parse(req.body) || req.body;
       let item = body.item;
-      if (!item || !item.lang || !item.code) {
+      if (!item || isNaN(parseInt(item.lang)) || !item.code) {
         res.status(500).json("Invalid data in POST /compile");
       } else {
         let val = await compile(auth, item);

@@ -77,27 +77,6 @@ function compileID(auth, id, options, resume) {
   }
 }
 
-function getComp(auth, id, req, res) {
-  let ids = decodeID(id);
-  let refresh = !!req.query.refresh;
-  let dontSave = !!req.query.dontSave;
-  let options = {
-    refresh: refresh,
-    dontSave: dontSave,
-  };
-  let t0 = new Date;
-  compileID(auth, id, options, (err, obj) => {
-    if (err) {
-      console.log("ERROR GET /data?id=" + ids.join("+") + " (" + id + ") err=" + err);
-      res.sendStatus(400);
-    } else {
-      console.log("GET /data?id=" + ids.join("+") + " (" + id + ") in " +
-                  (new Date - t0) + "ms" + (refresh ? " [refresh]" : ""));
-      res.json(obj);
-    }
-  });
-}
-
 function comp(auth, lang, code, data, options, resume) {
   pingLang(lang, pong => {
     if (pong) {
@@ -266,6 +245,12 @@ function nodeToJSON(n) {
   return obj;
 }
 
+function verifyCode(code) {
+  // Return code if valid, otherwise return null.
+  // TODO verify code.
+  return code;
+}
+
 function compile(auth, item) {
   // item = {
   //   id | type | code,
@@ -278,16 +263,13 @@ function compile(auth, item) {
   //   code is an AST which may or may not be in the AST store, and
   //   data is a JSON object to be passed with the code to the compiler.
   return new Promise(async (accept, reject) => {
-    if (!item || !item.lang || !item.code || !item.data) {
-      reject("Invalid 'item' passed to 'compile()'");
-    }
     let langID =
       item.lang ||
       item.code && item.code.lang;
     let codeIDs =
       item.id && decodeID(item.id) ||
       item.type && decodeID(getIDFromType(item.type)) ||
-      item.code && [langID, await codeToID(item.code), 0];
+      item.code && [langID, await codeToID(verifyCode(item.code)), 0];
     let dataID = await codeToID(jsonToCode(item.data));
     let dataIDs = dataID === 0 && [0] || [113, dataID, 0];
     let id = encodeID(codeIDs.slice(0,2).concat(dataIDs));
@@ -303,4 +285,3 @@ function compile(auth, item) {
 
 exports.compileID = compileID;
 exports.compile = compile;
-exports.getComp = getComp;

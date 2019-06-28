@@ -82,7 +82,6 @@ if (!module.parent) {
 }
 
 app.use('/', routes.root());
-app.use('/comp', routes.comp(authToken));
 app.use('/compile', routes.compile(authToken));
 app.use('/lang', routes.lang(authToken));
 
