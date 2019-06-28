@@ -19,8 +19,7 @@ const assert = (function assert() {
 function error(val, err) {
   // If 'val' is false then report 'err'.
   if (!val) {
-    let err = new Error(str);
-    throw err;
+    throw new Error(err);
   }
 }
 
@@ -134,3 +133,4 @@ exports.cleanAndTrimObj = cleanAndTrimObj;
 exports.cleanAndTrimSrc = cleanAndTrimSrc;
 exports.dot2num = dot2num;
 exports.num2dot = num2dot;
+exports.error = error;

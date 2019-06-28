@@ -1,21 +1,20 @@
 const assert = require('assert');
-const { Router } = require('express');
-const { compile } = require('../src/comp');
+const {Router} = require('express');
+const {compile} = require('../src/comp');
+const {error} = require('../src/util');
 module.exports = (auth) => {
   const router = new Router();
   router.post('/', async (req, res) => {
     try {
       let body = typeof req.body === "string" && JSON.parse(req.body) || req.body;
       let item = body.item;
-      if (!item || isNaN(parseInt(item.lang)) || !item.code) {
-        res.status(500).json("Invalid data in POST /compile");
-      } else {
-        let val = await compile(auth, item);
-        res.status(200).json(val);
-      }
+      error(item, "Missing item in POST /compile.");
+      error(!isNaN(parseInt(item.lang)), "Invalid language identifier in POST /compile data.");
+      error(item.code, "Invalid code in POST /compile data.");
+      let val = await compile(auth, item);
+      res.status(200).json(val);
     } catch(err) {
-      console.log(JSON.stringify(err, null, 2));
-      res.status(500).json(err);
+      res.status(500).json(err.message);
     }
   });
   return router;
