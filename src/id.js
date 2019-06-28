@@ -1,7 +1,6 @@
 const assert = require('assert');
 const Hashids = require('hashids');
-const {dbQuery} = require('./db.js');
-const {cleanAndTrimSrc} = require('./utils.js');
+const {cleanAndTrimSrc} = require('./util');
 
 const hashids = new Hashids('Art Compiler LLC');  // This string shall never change!
 

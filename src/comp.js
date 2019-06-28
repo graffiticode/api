@@ -1,8 +1,8 @@
 const assert = require('assert');
-const {decodeID, encodeID, codeToID, codeFromID} = require('./id.js');
-const {delCache, getCache, setCache} = require('./cache.js');
-const {pingLang, getCompilerVersion} = require('./lang.js');
-const {getCompilerHost, getCompilerPort, parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./utils.js');
+const {decodeID, encodeID, codeToID, codeFromID} = require('./id');
+const {delCache, getCache, setCache} = require('./cache');
+const {pingLang, getCompilerVersion} = require('./lang');
+const {getCompilerHost, getCompilerPort, parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./util');
 
 const nilID = encodeID([0,0,0]);
 
@@ -276,7 +276,6 @@ function compile(auth, item) {
     let id = encodeID(codeIDs.slice(0,2).concat(dataIDs));
     let t0 = new Date;
     compileID(auth, id, {}, (err, obj) => {
-      console.log("COMPILE id=" + id + " in " + (new Date() - t0) + "ms");
       if (err) {
         reject(err);
       } else {

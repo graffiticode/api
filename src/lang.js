@@ -1,4 +1,4 @@
-const {getCompilerHost, getCompilerPort} = require('./utils.js');
+const {getCompilerHost, getCompilerPort} = require('./util');
 
 let compilerVersions = {};
 

@@ -4,9 +4,9 @@ const {
   getCompilerHost,
   getCompilerPort,
   isNonEmptyString
-} = require('./../src/utils.js');
+} = require('./../src/util');
 
-describe('utils', () => {
+describe('util', () => {
   describe('getCompilerHost', () => {
     it('should return localhost if isLocalCompiles is true', () => {
       const config = { isLocalCompiles: true, hosts: {} };

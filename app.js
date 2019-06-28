@@ -6,7 +6,6 @@ const https = require('https');
 const methodOverride = require("method-override");
 const morgan = require("morgan");
 const routes = require('./routes');
-const {dbQuery} = require('./src/db.js');
 const {postAuth} = require('./src/auth.js');
 const app = module.exports = express();
 
@@ -84,17 +83,6 @@ if (!module.parent) {
 app.use('/', routes.root());
 app.use('/compile', routes.compile(authToken));
 app.use('/lang', routes.lang(authToken));
-
-// dbQuery("SELECT NOW() as when")
-//   .then (result => {
-//     if (result.rows.length > 0) {
-//       console.log(`Database Time: ${result.rows[0].when}`);
-//     }
-//   })
-//   .catch(err => {
-//     console.error(err.stack);
-//     process.exit(1);
-//   });
 
 if (process.env.NODE_ENV === 'development') {
   app.use(errorHandler({dumpExceptions: true, showStack: true}))
