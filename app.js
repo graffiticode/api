@@ -10,7 +10,7 @@ const {postAuth} = require('./src/auth.js');
 const app = module.exports = express();
 
 // Configuration
-const DEBUG = process.env.DEBUG_GRAFFITICODE === 'true' || false;
+const DEBUG = process.env.GRAFFITICODE_DEBUG === 'true' || false;
 const LOCAL_COMPILES = process.env.LOCAL_COMPILES === 'true' || false;
 const CONFIG = global.config = {
   isLocalCompiles: LOCAL_COMPILES,

@@ -1,14 +1,12 @@
 const LOCAL_COMPILES = process.env.LOCAL_COMPILES === 'true' || false;
+const DEBUG = process.env.GRAFFITICODE_DEBUG === 'true' || false;
 
-const messages = {};
-const reservedCodes = [];
-let ASSERT = true;
-
-let assert = (function assert() {
-  return !ASSERT ?
-    function () {} :
-    function (val, str) {
-      if ( str === void 0 ) {
+const assert = (function assert() {
+  // If 'DEBUG' is false then 'assert' is a no-op.
+  return !DEBUG ?
+    () => {} :
+    (test, str) => {
+      if (str === undefined) {
         str = "failed!";
       }
       if ( !val ) {
@@ -18,6 +16,15 @@ let assert = (function assert() {
     }
 })();
 
+function error(val, err) {
+  // If 'val' is false then report 'err'.
+  if (!val) {
+    let err = new Error(str);
+    throw err;
+  }
+}
+
+const messages = {};
 function message(errorCode, args = []) {
   let str = messages[errorCode];
   if (args) {
@@ -28,6 +35,7 @@ function message(errorCode, args = []) {
   return errorCode + ": " + str;
 }
 
+const reservedCodes = [];
 function reserveCodeRange(first, last, moduleName) {
   assert(first <= last, "Invalid code range");
   let noConflict = reservedCodes.every(function (range) {
@@ -99,6 +107,7 @@ function cleanAndTrimSrc(str) {
   }
   return str;
 }
+
 // From http://javascript.about.com/library/blipconvert.htm
 function dot2num(dot) {
   var d = dot.split('.');
@@ -108,6 +117,7 @@ function dot2num(dot) {
   }
   return n;
 }
+
 function num2dot(num) {
   var d = num%256;
   for (var i = 3; i > 0; i--) {
