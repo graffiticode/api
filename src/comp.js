@@ -1,6 +1,5 @@
 const assert = require('assert');
 const {decodeID, encodeID, codeToID, codeFromID} = require('./id.js');
-const {dbQueryAsync, updateAST, updateOBJ} = require('./db.js');
 const {delCache, getCache, setCache} = require('./cache.js');
 const {pingLang, getCompilerVersion} = require('./lang.js');
 const {getCompilerHost, getCompilerPort, parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./utils.js');
@@ -64,6 +63,8 @@ function compileID(auth, id, options, resume) {
                     if (err) {
                       resume(err);
                     } else {
+                      // TODO cache id => obj.
+                      setCache(lang, id, "data", obj);
                       resume(null, obj);
                     }
                   });
@@ -273,7 +274,9 @@ function compile(auth, item) {
     let dataID = await codeToID(jsonToCode(item.data));
     let dataIDs = dataID === 0 && [0] || [113, dataID, 0];
     let id = encodeID(codeIDs.slice(0,2).concat(dataIDs));
+    let t0 = new Date;
     compileID(auth, id, {}, (err, obj) => {
+      console.log("COMPILE id=" + id + " in " + (new Date() - t0) + "ms");
       if (err) {
         reject(err);
       } else {

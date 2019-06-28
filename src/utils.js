@@ -1,5 +1,42 @@
 const LOCAL_COMPILES = process.env.LOCAL_COMPILES === 'true' || false;
 
+const messages = {};
+const reservedCodes = [];
+let ASSERT = true;
+
+let assert = (function assert() {
+  return !ASSERT ?
+    function () { } :
+    function (val: boolean, str: string) {
+      if ( str === void 0 ) {
+        str = "failed!";
+      }
+      if ( !val ) {
+        let err = new Error(str);
+        throw err;
+      }
+    }
+})();
+
+function message(errorCode: number, args: Array<string> = []) {
+  let str = messages[errorCode];
+  if (args) {
+    args.forEach(function (arg, i) {
+      str = str.replace("%" + (i + 1), arg);
+    });
+  }
+  return errorCode + ": " + str;
+}
+
+function reserveCodeRange(first: number, last: number, moduleName: string) {
+  assert(first <= last, "Invalid code range");
+  let noConflict = reservedCodes.every(function (range) {
+    return last < range.first || first > range.last;
+  });
+  assert(noConflict, "Conflicting request for error code range");
+  reservedCodes.push({first: first, last: last, name: moduleName});
+}
+
 function parseJSON(str) {
   try {
     return JSON.parse(str);
