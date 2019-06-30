@@ -9,12 +9,8 @@ const routes = require('./routes');
 const {postAuth} = require('./src/auth.js');
 const app = module.exports = express();
 
-// Configuration
-const DEBUG = process.env.GRAFFITICODE_DEBUG === 'true' || false;
-const LOCAL_COMPILES = process.env.LOCAL_COMPILES === 'true' || false;
-const CONFIG = global.config = {
-  isLocalCompiles: LOCAL_COMPILES,
-};
+global.config = require("./config.json");
+
 var env = process.env.NODE_ENV || 'development';
 
 global.protocol = http; // Default. Set to http if localhost.
@@ -28,7 +24,7 @@ app.all('*', function (req, res, next) {
       next();
     }
   } else {
-    global.protocol = http;
+    global.protocol = https;
     next();
   }
 });

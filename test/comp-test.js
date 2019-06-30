@@ -1,11 +1,11 @@
 const { expect } = require('chai');
 const { compile } = require('./../src/comp');
 const { encodeID, codeToID } = require('./../src/id');
-const LOCAL_COMPILES = process.env.LOCAL_COMPILES === 'true' || false;
+//const LOCAL_COMPILES = process.env.LOCAL_COMPILES === 'true' || false;
 const http = require('http');
-global.config = {
-  isLocalCompiles: LOCAL_COMPILES,
-};
+// global.config = {
+//   isLocalCompiles: LOCAL_COMPILES,
+// };
 const TIMEOUT_DURATION = 5000;
 global.protocol = http;
 describe('comp', () => {
@@ -41,7 +41,7 @@ describe('comp', () => {
           }, data: {},
         })).to.equal("hello, world!");
     });
-    it('[cache] compiling L0 "hello, world!" from code', async () => {
+    it('compiling L0 "hello, world!" from code [cache]', async () => {
       expect(
         await compile(undefined, {
           lang: 0,

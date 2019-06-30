@@ -102,7 +102,7 @@ function comp(auth, lang, code, data, options, resume) {
           'Content-Length': Buffer.byteLength(encodedData),
         },
       };
-      var req = protocol.request(reqOptions, function(res) {
+      var req = global.protocol.request(reqOptions, function(res) {
         var data = "";
         res.on('data', function (chunk) {
           data += chunk;

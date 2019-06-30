@@ -1,0 +1,11 @@
+{
+  "unused": true,
+  "debug": false,
+  "isLocalCompiles": false,
+  "hosts": {
+    "L0": "L0.artcompiler.com"
+  },
+  "ports": {
+    "L0": "80"
+  }
+}

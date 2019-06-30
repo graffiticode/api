@@ -55,21 +55,23 @@ function parseJSON(str) {
 }
 
 function getCompilerHost(lang, config) {
-  if (config && config.hosts && config.hosts[lang]) {
-    return config.hosts[lang];
-  }
-  if (config && config.isLocalCompiles) {
+  config = config || {};
+  if (config.isLocalCompiles) {
     return 'localhost';
+  }
+  if (config.hosts && config.hosts[lang]) {
+    return config.hosts[lang];
   }
   return `${lang}.artcompiler.com`;
 }
 
 function getCompilerPort(lang, config) {
-  if (config.ports && config.ports[lang]) {
-    return config.ports[lang];
-  }
+  config = config || {};
   if (config.isLocalCompiles) {
     return `5${lang.substring(1)}`;
+  }
+  if (config.ports && config.ports[lang]) {
+    return config.ports[lang];
   }
   return '80';
 }

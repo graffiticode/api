@@ -7,5 +7,11 @@ describe('api', () => {
       .get('/')
       .expect(200, 'OK', done);
   });
+  describe('config.json', () => {
+    it('global.config should exist', () => {
+      expect(global.config.unused).to.equal(true);
+    });
+  });
+
 });
 
