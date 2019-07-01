@@ -96,7 +96,7 @@ function comp(auth, lang, code, data, options, resume) {
         host: getCompilerHost(lang, global.config),
         port: getCompilerPort(lang, global.config),
         path: path,
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'text/plain',
           'Content-Length': Buffer.byteLength(encodedData),

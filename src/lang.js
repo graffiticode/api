@@ -39,19 +39,25 @@ function getCompilerVersion(lang, resume) {
   }
 }
 
+let pingCache = {};
 function pingLang(lang, resume) {
-  let options = {
-    method: 'HEAD',
-    host: getCompilerHost(lang, global.config),
-    port: getCompilerPort(lang, global.config),
-    path: '/'
-  };
-  req = global.protocol.request(options, function(r) {
+  if (pingCache[lang]) {
     resume(true);
-  }).on("error", (e) => {
+  } else {
+    let options = {
+      method: 'HEAD',
+      host: getCompilerHost(lang, global.config),
+      port: getCompilerPort(lang, global.config),
+      path: '/'
+  };
+    req = global.protocol.request(options, function(r) {
+      pingCache[lang] = true;
+      resume(true);
+    }).on("error", (e) => {
     console.log("ERROR language unavailable: " + lang);
-    resume(false);
-  }).end();
+      resume(false);
+    }).end();
+  }
 }
 
 exports.pingLang = pingLang;

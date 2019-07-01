@@ -1,6 +1,4 @@
-const LOCAL_COMPILES = process.env.LOCAL_COMPILES === 'true' || false;
 const DEBUG = process.env.GRAFFITICODE_DEBUG === 'true' || false;
-
 const assert = (function assert() {
   // If 'DEBUG' is false then 'assert' is a no-op.
   return !DEBUG ?
@@ -56,7 +54,7 @@ function parseJSON(str) {
 
 function getCompilerHost(lang, config) {
   config = config || {};
-  if (config.useLocalCompiles) {
+  if (global.useLocalCompiles) {
     return 'localhost';
   }
   if (config.hosts && config.hosts[lang]) {
@@ -67,7 +65,7 @@ function getCompilerHost(lang, config) {
 
 function getCompilerPort(lang, config) {
   config = config || {};
-  if (config.useLocalCompiles) {
+  if (global.useLocalCompiles) {
     return `5${lang.substring(1)}`;
   }
   if (config.ports && config.ports[lang]) {
