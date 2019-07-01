@@ -56,7 +56,7 @@ function parseJSON(str) {
 
 function getCompilerHost(lang, config) {
   config = config || {};
-  if (config.isLocalCompiles) {
+  if (config.useLocalCompiles) {
     return 'localhost';
   }
   if (config.hosts && config.hosts[lang]) {
@@ -67,7 +67,7 @@ function getCompilerHost(lang, config) {
 
 function getCompilerPort(lang, config) {
   config = config || {};
-  if (config.isLocalCompiles) {
+  if (config.useLocalCompiles) {
     return `5${lang.substring(1)}`;
   }
   if (config.ports && config.ports[lang]) {

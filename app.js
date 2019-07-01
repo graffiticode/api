@@ -13,7 +13,8 @@ global.config = require("./config.json");
 
 var env = process.env.NODE_ENV || 'development';
 
-global.protocol = http; // Default. Set to http if localhost.
+global.useLocalCompiles = process.env.LOCAL_COMPILES === "true";
+global.protocol = global.useLocalCompiles && http || https;
 
 app.all('*', function (req, res, next) {
   if (req.headers.host.match(/^localhost/) === null) {
@@ -24,7 +25,6 @@ app.all('*', function (req, res, next) {
       next();
     }
   } else {
-    global.protocol = https;
     next();
   }
 });
@@ -55,7 +55,7 @@ const clientAddress = global.clientAddress = process.env.ARTCOMPILER_CLIENT_ADDR
   : "0x0123456789abcdef0123456789abcdef01234567";
 let authToken = process.env.ARTCOMPILER_CLIENT_SECRET;
 if (!module.parent) {
-  var port = global.port = process.env.PORT || 3000;
+  var port = global.port = process.env.PORT || 3100;
   app.listen(port, async function() {
     console.log("Listening on " + port);
     console.log("Using address " + clientAddress);

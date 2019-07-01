@@ -1,11 +1,9 @@
 {
-  "unused": true,
-  "debug": false,
-  "isLocalCompiles": false,
   "hosts": {
-    "L0": "L0.artcompiler.com"
+    "L0": "l0.artcompiler.com"
   },
   "ports": {
-    "L0": "80"
-  }
+    "L0": "443"
+  },
+  "unused": true
 }
