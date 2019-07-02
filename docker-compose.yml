@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+    graffiticode:
+        build:
+            context: .
+        volumes:
+            - .:/usr/src/app
+        environment:
+            CONFIG: "./config-compose.json"
+            PORT: 80
+        networks:
+            - net
+            - developer_net
+        labels:
+            - "learnosity.app_name=graffiticode"
+            - "learnosity.app_root=${PWD}"
+            - "traefik.frontend.rule=Host:gc.dev.learnosity.com"
+            - "traefik.port=80"
+            - "traefik.docker.network=developer_net"
+            - "traefik.frontend.entryPoints=https"
+            - "traefik.enable=true"
+
+networks:
+    net:
+    developer_net:
+        external: true

@@ -9,12 +9,13 @@ const routes = require('./routes');
 const {postAuth} = require('./src/auth.js');
 const app = module.exports = express();
 
-global.config = require("./config.json");
+const conf_file = process.env.CONFIG || "./config.json"
+global.config = require(conf_file);
+global.protocol = global.config.protocol === "https" ? https : http;
 
 var env = process.env.NODE_ENV || 'development';
 
 global.useLocalCompiles = process.env.LOCAL_COMPILES === "true";
-global.protocol = global.useLocalCompiles && http || https;
 
 app.all('*', function (req, res, next) {
   if (req.headers.host.match(/^localhost/) === null) {
@@ -33,10 +34,12 @@ app.use(morgan('combined', {
   skip: function (req, res) { return res.statusCode < 400 }
 }));
 
-app.use(bodyParser.urlencoded({ extended: false, limit: 100000000 }));
-app.use(bodyParser.text({limit: '50mb'}));
-app.use(bodyParser.raw({limit: '50mb'}));
-app.use(bodyParser.json({ type: 'application/vnd.api+json', limit: '50mb' }));
+//app.use(bodyParser.urlencoded({ extended: false, limit: 100000000 }));
+//app.use(bodyParser.text({limit: '50mb'}));
+//app.use(bodyParser.raw({limit: '50mb'}));
+//app.use(bodyParser.json({ type: 'application/vnd.api+json', limit: '50mb' }));
+app.use(bodyParser.json({ type: 'application/json', limit: '50mb' }));
+
 app.use(methodOverride());
 app.use(express.static(__dirname + '/public'));
 app.use('/lib', express.static(__dirname + '/lib'));
