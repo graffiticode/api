@@ -147,7 +147,7 @@ function intern(n) {
   var count = n.elts.length;
   for (var i = 0; i < count; i++) {
     if (typeof n.elts[i] === "object") {
-      n.elts[i] = intern(ctx, n.elts[i]);
+      n.elts[i] = intern(n.elts[i]);
     }
     elts += n.elts[i];
   }
@@ -188,14 +188,21 @@ function jsonChildToCode(data) {
     Array.isArray(data) && LIST ||
     type === "object" && RECORD;
   let elts = [];
-  if (tag === LIST || tag == RECORD) {
+  if (tag === LIST) {
     Object.keys(data).forEach(k => {
-      elts.push(intern(jsonToCode(data[k])));
+      elts.push(intern(jsonChildToCode(data[k])));
     })
+  } else if (tag == RECORD) {
+    Object.keys(data).forEach(k => {
+      elts.push(newNode(BINDING, [
+        intern(newNode(STR, [k])),
+        intern(jsonChildToCode(data[k]))
+      ]));
+    });
   } else {
     elts.push(data);
   }
-  let node = intern(newNode(tag, elts));
+  let node = newNode(tag, elts);
   return node;
 }
 
@@ -205,7 +212,7 @@ function jsonToCode(data) {
   }
   nodePool = ["unused"];
   nodeMap = {};
-  jsonChildToCode(data);
+  intern(jsonChildToCode(data));
   let node = poolToJSON();
   return node;
 }
