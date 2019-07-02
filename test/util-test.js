@@ -8,30 +8,30 @@ const {
 
 describe('util', () => {
   describe('getCompilerHost', () => {
-    it('should return localhost if isLocalCompiles is true', () => {
-      const config = { isLocalCompiles: true, hosts: {} };
+    it('should return localhost if useLocalCompiles is true', () => {
+      const config = { useLocalCompiles: true, hosts: {} };
       expect(getCompilerHost('L0', config)).to.equal('localhost');
     });
-    it('should return default if isLocalCompiles is false', () => {
-      const config = { isLocalCompiles: false, hosts: {} };
+    it('should return default if useLocalCompiles is false', () => {
+      const config = { useLocalCompiles: false, hosts: {} };
       expect(getCompilerHost('L0', config)).to.equal('L0.artcompiler.com');
     });
     it('should return override if hosts is set', () => {
-      const config = { isLocalCompiles: false, hosts: {'L0': 'mycompiler.com'} };
+      const config = { useLocalCompiles: false, hosts: {'L0': 'mycompiler.com'} };
       expect(getCompilerHost('L0', config)).to.equal('mycompiler.com');
     });
   });
   describe('getCompilerPort', () => {
-    it('should return localhost if isLocalCompiles is true', () => {
-      const config = { isLocalCompiles: true, ports: {} };
+    it('should return localhost if useLocalCompiles is true', () => {
+      const config = { useLocalCompiles: true, ports: {} };
       expect(getCompilerPort('L0', config)).to.equal('50');
     });
-    it('should return default if isLocalCompiles is false', () => {
-      const config = { isLocalCompiles: false, ports: {} };
+    it('should return default if useLocalCompiles is false', () => {
+      const config = { useLocalCompiles: false, ports: {} };
       expect(getCompilerPort('L0', config)).to.equal('80');
     });
     it('should return override if ports is set', () => {
-      const config = { isLocalCompiles: false, ports: {'L0': '42'} };
+      const config = { useLocalCompiles: false, ports: {'L0': '42'} };
       expect(getCompilerPort('L0', config)).to.equal('42');
     });
   });
