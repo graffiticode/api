@@ -98,7 +98,7 @@ function comp(auth, lang, code, data, options, resume) {
         path: path,
         method: 'POST',
         headers: {
-          'Content-Type': 'text/plain',
+          'Content-Type': 'application/json',
           'Content-Length': Buffer.byteLength(encodedData),
         },
       };
