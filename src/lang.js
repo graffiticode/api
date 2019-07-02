@@ -49,12 +49,12 @@ function pingLang(lang, resume) {
       host: getCompilerHost(lang, global.config),
       port: getCompilerPort(lang, global.config),
       path: '/'
-  };
+    };
     req = global.protocol.request(options, function(r) {
       pingCache[lang] = true;
       resume(true);
     }).on("error", (e) => {
-    console.log("ERROR language unavailable: " + lang);
+      console.log("ERROR language unavailable: " + lang);
       resume(false);
     }).end();
   }

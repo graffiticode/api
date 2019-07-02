@@ -60,7 +60,7 @@ function getCompilerHost(lang, config) {
   if (config.hosts && config.hosts[lang]) {
     return config.hosts[lang];
   }
-  return `${lang}.artcompiler.com`;
+  return `${lang.toLowerCase()}.artcompiler.com`;
 }
 
 function getCompilerPort(lang, config) {
@@ -71,7 +71,7 @@ function getCompilerPort(lang, config) {
   if (config.ports && config.ports[lang]) {
     return config.ports[lang];
   }
-  return '80';
+  return '443';
 }
 
 function isNonEmptyString(str) {

@@ -14,7 +14,7 @@ describe('util', () => {
     });
     it('should return default if useLocalCompiles is false', () => {
       const config = { useLocalCompiles: false, hosts: {} };
-      expect(getCompilerHost('L0', config)).to.equal('L0.artcompiler.com');
+      expect(getCompilerHost('L0', config)).to.equal('l0.artcompiler.com');
     });
     it('should return override if hosts is set', () => {
       const config = { useLocalCompiles: false, hosts: {'L0': 'mycompiler.com'} };
@@ -28,7 +28,7 @@ describe('util', () => {
     });
     it('should return default if useLocalCompiles is false', () => {
       const config = { useLocalCompiles: false, ports: {} };
-      expect(getCompilerPort('L0', config)).to.equal('80');
+      expect(getCompilerPort('L0', config)).to.equal('443');
     });
     it('should return override if ports is set', () => {
       const config = { useLocalCompiles: false, ports: {'L0': '42'} };
