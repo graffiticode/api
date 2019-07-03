@@ -84,13 +84,10 @@ function comp(auth, lang, code, data, options, resume) {
       // Compile ast to obj.
       var path = "/compile";
       var encodedData = JSON.stringify({
-        "description": "graffiticode",
-        "language": lang,
-        "src": code,
-        "data": data,
-        "refresh": options.refresh,
-        "config": config,
-        "auth": auth,
+        code: code,
+        data: data,
+        options: options,
+        auth: auth,
       });
       var reqOptions = {
         host: getCompilerHost(lang, global.config),
@@ -270,6 +267,7 @@ function compile(auth, item) {
   //   type is a type string that is mapped to an ID by getIDFromType,
   //   code is an AST which may or may not be in the AST store, and
   //   data is a JSON object to be passed with the code to the compiler.
+  //   options is an object defining various contextual values.
   return new Promise(async (accept, reject) => {
     let langID =
       item.lang ||
@@ -281,8 +279,9 @@ function compile(auth, item) {
     let dataID = await codeToID(jsonToCode(item.data));
     let dataIDs = dataID === 0 && [0] || [113, dataID, 0];
     let id = encodeID(codeIDs.slice(0,2).concat(dataIDs));
+    let options = item.options || {};
     let t0 = new Date;
-    compileID(auth, id, {}, (err, obj) => {
+    compileID(auth, id, options, (err, obj) => {
       if (err) {
         reject(err);
       } else {
