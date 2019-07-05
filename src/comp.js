@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {decodeID, encodeID, codeToID, codeFromID} = require('./id');
+const {decodeID, encodeID, objectToID, objectFromID} = require('./id');
 const {delCache, getCache, setCache} = require('./cache');
 const {pingLang, getCompilerVersion} = require('./lang');
 const {getCompilerHost, getCompilerPort, parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./util');
@@ -11,7 +11,7 @@ function getLang(ids, resume) {
 }
 
 function getCode(ids, resume) {
-  codeFromID(ids[1])
+  objectFromID(ids[1])
     .then(val => {
       resume(null, val);
     })
@@ -22,13 +22,22 @@ function getCode(ids, resume) {
     });
 }
 
-function getData(auth, ids, refresh, resume) {
+function getData(ids, resume) {
   if (encodeID(ids) === nilID || ids.length === 3 && +ids[2] === 0) {
     resume(null, {});
   } else {
-    // Compile the tail.
-    let id = encodeID(ids.slice(2));
-    compileID(auth, id, {refresh: refresh}, resume);
+    ids = ids.slice(2);
+    assert(ids.length === 3);
+    assert(ids[0] === 113);
+    objectFromID(ids[1])
+      .then(val => {
+        resume(null, val);
+      })
+      .catch(err => {
+        console.log("getData() err=" + err);
+        console.trace();
+        resume(err);
+      });
   }
 }
 
@@ -47,7 +56,7 @@ function compileID(auth, id, options, resume) {
         // Got cached value. We're done.
         resume(err, val);
       } else {
-        getData(auth, ids, refresh, (err, data) => {
+        getData(ids, (err, data) => {
           getCode(ids, (err, code) => {
             if (err && err.length) {
               resume(err, null);
@@ -258,27 +267,22 @@ function verifyCode(code) {
 
 function compile(auth, item) {
   // item = {
-  //   id | type | code,
-  //   data
+  //   lang,
+  //   code,
+  //   data,
+  //   options,
   // }
   // where
-  //   id is the ID of an AST in the AST store,
   //   lang is an integer language identifier,
-  //   type is a type string that is mapped to an ID by getIDFromType,
   //   code is an AST which may or may not be in the AST store, and
   //   data is a JSON object to be passed with the code to the compiler.
   //   options is an object defining various contextual values.
   return new Promise(async (accept, reject) => {
-    let langID =
-      item.lang ||
-      item.code && item.code.lang;
-    let codeIDs =
-      item.id && decodeID(item.id) ||
-      item.type && decodeID(getIDFromType(item.type)) ||
-      item.code && [langID, await codeToID(verifyCode(item.code)), 0];
-    let dataID = await codeToID(jsonToCode(item.data));
-    let dataIDs = dataID === 0 && [0] || [113, dataID, 0];
-    let id = encodeID(codeIDs.slice(0,2).concat(dataIDs));
+    let langID = item.lang;
+    let codeID = await objectToID(verifyCode(item.code));
+    let dataID = await objectToID(item.data);
+    let dataIDs = dataID === 0 && [0] || [113, dataID, 0];  // L113 is the data language.
+    let id = encodeID([langID, codeID].concat(dataIDs));
     let options = item.options || {};
     let t0 = new Date;
     compileID(auth, id, options, (err, obj) => {

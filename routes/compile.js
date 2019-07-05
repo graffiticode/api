@@ -2,7 +2,7 @@ const assert = require('assert');
 const {Router} = require('express');
 const {compile} = require('../src/comp');
 const {error} = require('../src/util');
-module.exports = (auth) => {
+module.exports = () => {
   const router = new Router();
   router.get('/', async (req, res) => {
     try {
@@ -23,6 +23,7 @@ module.exports = (auth) => {
     try {
       let body = typeof req.body === "string" && JSON.parse(req.body) || req.body;
       let item = body.item;
+      let auth = body.auth;
       error(item, "Missing item in POST /compile.");
       error(!isNaN(parseInt(item.lang)), "Invalid language identifier in POST /compile data.");
       error(item.code, "Invalid code in POST /compile data.");

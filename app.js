@@ -6,7 +6,6 @@ const https = require('https');
 const methodOverride = require("method-override");
 const morgan = require("morgan");
 const routes = require('./routes');
-const {postAuth} = require('./src/auth.js');
 const app = module.exports = express();
 
 global.config = require(process.env.CONFIG || "./config.json");
@@ -14,7 +13,6 @@ global.config.useLocalCompiles = process.env.LOCAL_COMPILES === "true";
 global.protocol = !global.config.useLocalCompiles && global.config.protocol === "https" && https || http;
 
 var env = process.env.NODE_ENV || 'development';
-
 
 app.all('*', function (req, res, next) {
   if (req.headers.host.match(/^localhost/) === null) {
@@ -47,36 +45,16 @@ app.use(function (err, req, res, next) {
 
 var request = require('request');
 
-// Client login
-const clientAddress = global.clientAddress = process.env.ARTCOMPILER_CLIENT_ADDRESS
-  ? process.env.ARTCOMPILER_CLIENT_ADDRESS
-  : "0x0123456789abcdef0123456789abcdef01234567";
-let authToken = process.env.ARTCOMPILER_CLIENT_SECRET;
 if (!module.parent) {
   var port = global.port = process.env.PORT || 3100;
   app.listen(port, async function() {
     console.log("Listening on " + port);
-    console.log("Using address " + clientAddress);
-    if (!authToken) {
-      // Secret not stored in env so get one.
-      console.log("ARTCOMPILER_CLIENT_SECRET not set. Generating a temporary secret.");
-      postAuth("/login", {
-        "address": clientAddress,
-      }, (err, data) => {
-        postAuth("/finishLogin", {
-          "jwt": data.jwt,
-        }, (err, data) => {
-          // Default auth token.
-          authToken = data.jwt;
-        });
-      });
-    }
   });
 }
 
 app.use('/', routes.root());
-app.use('/compile', routes.compile(authToken));
-app.use('/lang', routes.lang(authToken));
+app.use('/compile', routes.compile());
+app.use('/lang', routes.lang());
 
 if (process.env.NODE_ENV === 'development') {
   app.use(errorHandler({dumpExceptions: true, showStack: true}))

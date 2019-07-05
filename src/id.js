@@ -85,7 +85,7 @@ function dumpMap(map) {
 
 const codeIDMap = new Map([[JSON.stringify({}), 1]]);
 const idCodeMap = new Map([[1, {}]]);
-function codeToID(code) {
+function objectToID(code) {
   return new Promise((accept, reject) => {
     let id;
     if (code === null) {
@@ -102,7 +102,7 @@ function codeToID(code) {
   });
 }
 
-function codeFromID(id) {
+function objectFromID(id) {
   return new Promise((accept, reject) => {
     accept(idCodeMap.get(id));
   });
@@ -110,5 +110,5 @@ function codeFromID(id) {
 
 module.exports.decodeID = decodeID;
 module.exports.encodeID = encodeID;
-module.exports.codeToID = codeToID;
-module.exports.codeFromID = codeFromID
+module.exports.objectToID = objectToID;
+module.exports.objectFromID = objectFromID;
