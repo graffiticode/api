@@ -50,7 +50,6 @@ function pingLang(lang, resume) {
       port: getCompilerPort(lang, global.config),
       path: '/'
     };
-    console.log("pingLang() options=" + JSON.stringify(options));
     req = global.protocol.request(options, function(r) {
       pingCache[lang] = true;
       resume(true);

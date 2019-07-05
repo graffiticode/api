@@ -1,22 +1,22 @@
 const { expect } = require('chai');
-const { decodeID, encodeID, codeToID, codeFromID } = require('./../src/id');
+const { decodeID, encodeID, objectToID, objectFromID } = require('./../src/id');
 describe('id', () => {
-  describe('codeToID', () => {
+  describe('objectToID', () => {
     it('should return 1 when given {}', async () => {
       expect(
-        await codeToID({})
+        await objectToID({})
       ).to.equal(1)
     })
   });
-  describe('codeFromID', () => {
+  describe('objectFromID', () => {
     it('getting ID for code {}', async () => {
       expect(
-        await codeFromID(1)
+        await objectFromID(1)
       ).to.eql({})
     })
     it('getting code for ID=2', async () => {
       expect(
-        await codeFromID(2)
+        await objectFromID(2)
       ).to.eql({
         "1":{"tag":"STR","elts":["hello, world!"]},
         "2":{"tag":"EXPRS","elts":[1]},
