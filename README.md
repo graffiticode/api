@@ -1,4 +1,4 @@
-## Getting started with API gateway
+## Getting started with the API gateway
 
 ### Steps include (Mac OSX)
 
