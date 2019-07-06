@@ -6,7 +6,7 @@
   * `$ git clone git@github.com:graffiticode/api.git`
   * `$ cd api`
   * `$ npm install`
-* Set Graffiticode LOCAL_COMPILES to true
+* Make Graffiticode use this local API gateway.
   * Switch to the ./graffiticode terminal.
   * `$ export LOCAL_COMPILES=true`
 * Test the API gateway
