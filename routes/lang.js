@@ -2,19 +2,11 @@ const {Router} = require('express');
 const {pingLang} = require('../src/lang');
 module.exports = () => {
   const router = new Router();
-  router.get('/:lang', (req, res) => {
-    getLang(req.params.lang, res);
-  });
   router.get('/', (req, res) => {
-    getLang(req.query.id, res);
-  });
-  function getLang(lang, res) {
-    if (!isNaN(parseInt(lang))) {
-      lang = "L" + lang;
-    }
-    if (!lang) {
+    if (isNaN(parseInt(req.query.id))) {
       res.sendStatus(400);
     } else {
+      let lang = "L" + req.query.id;
       pingLang(lang, val => {
         if (val) {
           res.sendStatus(200);
@@ -23,6 +15,6 @@ module.exports = () => {
         }
       });
     }
-  }
+  });
   return router;
 }

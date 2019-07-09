@@ -29,7 +29,7 @@ function getCompilerVersion(lang, resume) {
             });
           });
         } catch (e) {
-          console.log("[3] ERROR " + e.stack);
+          console.log("ERROR " + e.stack);
           resume(null);
         }
       } else {
@@ -39,25 +39,19 @@ function getCompilerVersion(lang, resume) {
   }
 }
 
-let pingCache = {};
 function pingLang(lang, resume) {
-  if (pingCache[lang]) {
+  let options = {
+    method: 'HEAD',
+    host: getCompilerHost(lang, global.config),
+    port: getCompilerPort(lang, global.config),
+    path: '/'
+  };
+  req = global.protocol.request(options, function(r) {
     resume(true);
-  } else {
-    let options = {
-      method: 'HEAD',
-      host: getCompilerHost(lang, global.config),
-      port: getCompilerPort(lang, global.config),
-      path: '/'
-    };
-    req = global.protocol.request(options, function(r) {
-      pingCache[lang] = true;
-      resume(true);
-    }).on("error", (e) => {
-      console.log("ERROR language unavailable: " + lang);
-      resume(false);
-    }).end();
-  }
+  }).on("error", (e) => {
+    console.log("ERROR language unavailable: " + lang);
+    resume(false);
+  }).end();
 }
 
 exports.pingLang = pingLang;
