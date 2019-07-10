@@ -43,8 +43,6 @@ app.use(function (err, req, res, next) {
 
 // Routes
 
-var request = require('request');
-
 if (!module.parent) {
   var port = global.port = process.env.PORT || 3100;
   app.listen(port, async function() {
@@ -55,6 +53,7 @@ if (!module.parent) {
 app.use('/', routes.root());
 app.use('/compile', routes.compile());
 app.use('/lang', routes.lang());
+app.use('/:path', routes.lang());
 
 if (process.env.NODE_ENV === 'development') {
   app.use(errorHandler({dumpExceptions: true, showStack: true}))

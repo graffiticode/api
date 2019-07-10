@@ -18,8 +18,7 @@
     "method-override": "latest",
     "morgan": "latest",
     "pg": "6.1.6",
-    "redis": "2.6.3",
-    "request": "^2.88.0"
+    "redis": "2.6.3"
   },
   "engines": {
     "node": "9.0.0"

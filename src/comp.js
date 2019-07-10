@@ -28,7 +28,7 @@ function getData(ids, resume) {
   } else {
     ids = ids.slice(2);
     assert(ids.length === 3);
-    assert(ids[0] === 113);
+    assert(ids[0] === 113);   // L113 code is stored as data not an AST.
     objectFromID(ids[1])
       .then(val => {
         resume(null, val);
@@ -138,125 +138,6 @@ function getIDFromType(type) {
   default:
     return null;
   }
-}
-
-let nodePool;
-let nodeMap;
-
-function intern(n) {
-  if (!n) {
-    return 0;
-  }
-  var tag = n.tag;
-  var elts = "";
-  var elts_nids = [ ];
-  var count = n.elts.length;
-  for (var i = 0; i < count; i++) {
-    if (typeof n.elts[i] === "object") {
-      n.elts[i] = intern(n.elts[i]);
-    }
-    elts += n.elts[i];
-  }
-  var key = tag+count+elts;
-  var nid = nodeMap[key];
-  if (nid === void 0) {
-    nodePool.push({tag: tag, elts: n.elts});
-    nid = nodePool.length - 1;
-    nodeMap[key] = nid;
-    if (n.coord) {
-      ctx.state.coords[nid] = n.coord;
-    }
-  }
-  return nid;
-}
-
-function newNode(tag, elts) {
-  return {
-    tag: tag,
-    elts: elts,
-  }
-};
-const NULL = "NULL";
-const STR = "STR";
-const NUM = "NUM";
-const BOOL = "BOOL";
-const LIST = "LIST";
-const RECORD = "RECORD";
-const BINDING = "BINDING";
-
-function jsonChildToCode(data) {
-  let type = typeof data;
-  let tag =
-    data === null && NULL ||
-    type === "string" && STR ||
-    type === "number" && NUM ||
-    type === "boolean" && BOOL ||
-    Array.isArray(data) && LIST ||
-    type === "object" && RECORD;
-  let elts = [];
-  if (tag === LIST) {
-    Object.keys(data).forEach(k => {
-      elts.push(intern(jsonChildToCode(data[k])));
-    })
-  } else if (tag == RECORD) {
-    Object.keys(data).forEach(k => {
-      elts.push(newNode(BINDING, [
-        intern(newNode(STR, [k])),
-        intern(jsonChildToCode(data[k]))
-      ]));
-    });
-  } else {
-    elts.push(data);
-  }
-  let node = newNode(tag, elts);
-  return node;
-}
-
-function jsonToCode(data) {
-  if (!data || Object.keys(data).length === 0) {
-    return null;
-  }
-  nodePool = ["unused"];
-  nodeMap = {};
-  intern(jsonChildToCode(data));
-  let node = poolToJSON();
-  return node;
-}
-
-function poolToJSON() {
-  var obj = { };
-  for (var i=1; i < nodePool.length; i++) {
-    var n = nodePool[i];
-    obj[i] = nodeToJSON(n);
-  }
-  obj.root = (nodePool.length-1);
-  return obj;
-}
-
-function nodeToJSON(n) {
-  if (typeof n === "object") {
-    switch (n.tag) {
-    case "num":
-      var obj = n.elts[0];
-      break;
-    case "str":
-      var obj = n.elts[0];
-      break;
-    default:
-      var obj = {};
-      obj["tag"] = n.tag;
-      obj["elts"] = [];
-      for (var i=0; i < n.elts.length; i++) {
-        obj["elts"][i] = nodeToJSON(n.elts[i]);
-      }
-      break;
-    }
-  } else if (typeof n === "string") {
-    var obj = n;
-  } else {
-    var obj = n;
-  }
-  return obj;
 }
 
 function verifyCode(code) {
