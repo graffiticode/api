@@ -53,7 +53,7 @@ if (!module.parent) {
 app.use('/', routes.root());
 app.use('/compile', routes.compile());
 app.use('/lang', routes.lang());
-app.use('/:path', routes.lang());
+app.use('/L*', routes.lang());
 
 if (process.env.NODE_ENV === 'development') {
   app.use(errorHandler({dumpExceptions: true, showStack: true}))

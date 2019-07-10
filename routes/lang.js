@@ -1,31 +1,37 @@
 const {Router} = require('express');
 const {pingLang} = require('../src/lang');
+const {getCompilerHost, getCompilerPort} = require('../src/util');
 module.exports = () => {
   const router = new Router();
   router.get('/', (req, res) => {
-    if (isNaN(parseInt(req.query.id))) {
+    let [unused, base, path] = req.baseUrl.split("/");
+    let id =
+      base === "lang" && req.query.id ||
+      base.indexOf("L") === 0 && base.slice(1);
+    if (isNaN(parseInt(id))) {
       res.sendStatus(400);
     } else {
-      let lang = "L" + req.query.id;
-      pingLang(lang, val => {
-        if (val) {
-          res.sendStatus(200);
-        } else {
-          res.sendStatus(400);
-        }
-      });
-    }
-  });
-  router.get('/:file', (req, res) => {
-    console.log("GET /:path params=" + JSON.stringify(req.params));
-    console.log("GET /:path baseUrl=" + req.baseUrl);
-    if (isNaN(parseInt(req.query.id))) {
-      res.sendStatus(400);
-    } else {
-      let lang = "L" + req.query.id;
-      pingLang(lang, val => {
-        if (val) {
-          res.sendStatus(200);
+      let lang = "L" + id;
+      pingLang(lang, pong => {
+        if (pong) {
+          if (path === undefined) {
+            res.sendStatus(200);
+          } else {
+            let data = [];
+            let config = global.config;
+            let options = {
+              host: getCompilerHost(lang, config),
+              port: getCompilerPort(lang, config),
+              path: "/" + path,
+            };
+            req = protocol.get(options, function(res2) {
+              res2.on("data", function (chunk) {
+                data.push(chunk);
+              }).on("end", function () {
+                res.send(data.join(""));
+              });
+            });
+          }
         } else {
           res.sendStatus(400);
         }
