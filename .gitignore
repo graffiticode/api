@@ -1,2 +1,10 @@
+# graffiticode/api
+lib/
+
+# NodeJS
 node_modules
 *~
+
+# AWS Lambda
+function.zip
+
