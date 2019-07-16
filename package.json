@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "aws-sdk": "2.286.2",
+    "aws-serverless-express": "^3.3.6",
     "body-parser": "latest",
     "errorhandler": "latest",
     "express": "^4.16.4",
@@ -43,6 +44,9 @@
   "scripts": {
     "start": "node app.js",
     "test": "mocha --reporter spec --recursive",
-    "build": "tsc"
+    "build": "tsc",
+    "lambda:zip": "zip -r function.zip . -x=.git/*",
+    "lambda:update": "aws lambda update-function-code --function-name api --zip-file fileb://function.zip",
+    "deploy:lambda": "npm run build && npm run lambda:zip && npm run lambda:update"
   }
 }
