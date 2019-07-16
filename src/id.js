@@ -83,7 +83,7 @@ function dumpMap(map) {
   });
 }
 
-const objCodeMap = new Map([[JSON.stringify({}), 1]]);
+const objIDMap = new Map([[JSON.stringify({}), 1]]);
 const idObjMap = new Map([[1, {}]]);
 function objectToID(obj) {
   return new Promise((accept, reject) => {
@@ -91,12 +91,12 @@ function objectToID(obj) {
     if (obj === null) {
       id = 0;
     } else {
-      if (!objCodeMap.has(JSON.stringify(obj))) {
+      if (!objIDMap.has(JSON.stringify(obj))) {
         let id = idObjMap.size + 1;
-        objCodeMap.set(JSON.stringify(obj), id);
+        objIDMap.set(JSON.stringify(obj), id);
         idObjMap.set(id, obj);
       }
-      id = objCodeMap.get(JSON.stringify(obj));
+      id = objIDMap.get(JSON.stringify(obj));
     }
     accept(id);
   });
