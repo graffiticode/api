@@ -29,6 +29,7 @@
     "chai": "^4.2.0",
     "graceful-fs": "^4.1.15",
     "mocha": "^6.1.3",
+    "nyc": "^14.1.1",
     "react": "0.14.5",
     "react-dom": "0.14.5",
     "supertest": "^4.0.2",
@@ -38,6 +39,7 @@
   "scripts": {
     "start": "node app.js",
     "test": "mocha --reporter spec --recursive",
+    "coverage": "nyc npm run test",
     "build": "tsc",
     "lambda:zip": "zip -r function.zip . -x=.git/*",
     "lambda:update": "aws lambda update-function-code --function-name api --zip-file fileb://function.zip",
