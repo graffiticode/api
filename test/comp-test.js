@@ -2,7 +2,8 @@ const { expect } = require('chai');
 const { compile } = require('./../src/comp');
 const { encodeID, objectToID } = require('./../src/id');
 const TIMEOUT_DURATION = 5000;
-describe('comp', () => {
+describe('comp', function() {
+  this.timeout(TIMEOUT_DURATION);
   describe('compile', () => {
     it('mapping an AST to an ID', async () => {
       expect(
@@ -89,5 +90,5 @@ describe('comp', () => {
           ]
         });
     });
-  }).timeout(TIMEOUT_DURATION);
+  });
 });
