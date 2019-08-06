@@ -16,8 +16,7 @@ function getCode(ids, resume) {
       resume(null, val);
     })
     .catch(err => {
-      console.log("getCode() err=" + err);
-      console.trace();
+      console.log("getCode() err=" + err.stack);
       resume(err);
     });
 }
@@ -65,18 +64,24 @@ function compileID(auth, id, options, resume) {
                 if (err && err.length) {
                   resume(err, null);
                 } else {
-                  assert(code && code.root !== undefined, "Invalid code for item " + ids[1]);
-                  // Let downstream compilers know they need to refresh
-                  // any data used.
-                  comp(auth, lang, code, data, options, (err, obj) => {
-                    if (err) {
-                      resume(err);
-                    } else {
-                      // TODO cache id => obj.
-                      setCache(lang, id, "data", obj);
-                      resume(null, obj);
-                    }
-                  });
+                  if (code && code.root) {
+                    assert(code && code.root !== undefined, "Invalid code for item " + ids[1]);
+                    // Let downstream compilers know they need to refresh
+                    // any data used.
+                    comp(auth, lang, code, data, options, (err, obj) => {
+                      if (err) {
+                        resume(err);
+                      } else {
+                        // TODO cache id => obj.
+                        setCache(lang, id, "data", obj);
+                        resume(null, obj);
+                      }
+                    });
+                  } else {
+                    // Error handling here.
+                    console.log("ERROR compileID() ids=" + ids + " missing code");
+                    resume(null, {});
+                  }
                 }
               });
             }
