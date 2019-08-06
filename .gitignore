@@ -7,3 +7,6 @@ node_modules
 
 # AWS Lambda
 function.zip
+
+# nyc (coverage)
+.nyc_output

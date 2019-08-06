@@ -33,7 +33,7 @@ module.exports = () => {
             });
           }
         } else {
-          res.sendStatus(400);
+          res.sendStatus(404);
         }
       });
     }
