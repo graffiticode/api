@@ -1,5 +1,12 @@
+const assert = require('assert');
 const {Router} = require('express');
-const {error, parseJSON} = require('./../util');
+const {parseJSON} = require('./../util');
+
+async function validate(item) {
+    assert(item, 'body must contain an item');
+    assert(!isNaN(parseInt(item.lang)), `item must specify a language`);
+    assert(item.code, `item must contain code`);
+}
 
 function createCompileHandler(compile) {
   return async function (req, res) {
@@ -7,13 +14,14 @@ function createCompileHandler(compile) {
       if (typeof req.body === 'string') {
         req.body = parseJSON(req.body);
       }
-      const {item, auth} = req.body;
-      error(item, `Missing item in ${req.method} /compile.`);
-      error(!isNaN(parseInt(item.lang)), `Invalid language identifier in ${req.method} /compile data.`);
-      error(item.code, `Invalid code in ${req.method} /compile data.`);
+      const {auth, item} = req.body;
+      await validate(item);
       const val = await compile(auth, item);
       res.status(200).json(val);
     } catch(err) {
+      if (err instanceof assert.AssertionError) {
+        return res.status(400).send(err.message);
+      }
       res.status(500).send(err.message);
     }
   };

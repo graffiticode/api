@@ -41,32 +41,32 @@ describe('routes', () => {
         .send(JSON.stringify({item: {lang: 0, code: {}}}))
         .expect(200, '"foo"');
     });
-    it('POST / 500 no body', async () => {
+    it('POST / 400 no body', async () => {
       await request(app)
         .post('/')
         .set('Content-Type', 'application/json')
-        .expect(500, 'Missing item in POST /compile.');
+        .expect(400, 'body must contain an item');
     });
-    it('POST / 500 empty body', async () => {
+    it('POST / 400 empty body', async () => {
       await request(app)
         .post('/')
         .set('Content-Type', 'application/json')
         .send({})
-        .expect(500, 'Missing item in POST /compile.');
+        .expect(400, 'body must contain an item');
     });
-    it('POST / 500 item has no code', async () => {
+    it('POST / 400 item has no code', async () => {
       await request(app)
         .post('/')
         .set('Content-Type', 'application/json')
         .send({item: {lang: 0}})
-        .expect(500, 'Invalid code in POST /compile data.');
+        .expect(400, 'item must contain code');
     });
-    it('POST / 500 item has no lang', async () => {
+    it('POST / 400 item has no lang', async () => {
       await request(app)
         .post('/')
         .set('Content-Type', 'application/json')
         .send({item: {code: {}}})
-        .expect(500, 'Invalid language identifier in POST /compile data.');
+        .expect(400, 'item must specify a language');
     });
     it('POST / 500 compiler throws an error', async () => {
       compilerError = new Error('fake error');
