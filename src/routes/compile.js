@@ -1,5 +1,5 @@
 const {Router} = require('express');
-const {error, parseJSON} = require('../src/util');
+const {error, parseJSON} = require('./../util');
 
 function createCompileHandler(compile) {
   return async function (req, res) {
