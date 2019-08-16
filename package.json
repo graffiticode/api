@@ -9,20 +9,23 @@
     "url": "https://github.com/graffiticode/api"
   },
   "dependencies": {
-    "aws-sdk": "2.286.2",
     "aws-serverless-express": "^3.3.6",
-    "body-parser": "latest",
+    "body-parser": "^1.19.0",
     "errorhandler": "latest",
     "express": "^4.16.4",
-    "express-session": "^1.15.6",
     "hashids": "1.1.1",
     "method-override": "latest",
     "morgan": "latest",
-    "pg": "6.1.6",
     "redis": "2.6.3"
   },
-  "engines": {
-    "node": "9.0.0"
+  "scripts": {
+    "start": "node app.js",
+    "test": "mocha --reporter spec --recursive",
+    "coverage": "nyc npm run test",
+    "build": "tsc",
+    "lambda:zip": "zip -r function.zip . -x=.git/*",
+    "lambda:update": "aws lambda update-function-code --function-name api --zip-file fileb://function.zip",
+    "deploy:lambda": "npm run build && npm run lambda:zip && npm run lambda:update"
   },
   "devDependencies": {
     "@types/node": "^12.0.2",
@@ -35,14 +38,5 @@
     "supertest": "^4.0.2",
     "typescript": "^3.5.2",
     "uglify-js": "^2.7.3"
-  },
-  "scripts": {
-    "start": "node app.js",
-    "test": "mocha --reporter spec --recursive",
-    "coverage": "nyc npm run test",
-    "build": "tsc",
-    "lambda:zip": "zip -r function.zip . -x=.git/*",
-    "lambda:update": "aws lambda update-function-code --function-name api --zip-file fileb://function.zip",
-    "deploy:lambda": "npm run build && npm run lambda:zip && npm run lambda:update"
   }
 }
