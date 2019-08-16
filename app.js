@@ -1,3 +1,4 @@
+const {compile} = require('./src/comp');
 const errorHandler = require('errorhandler');
 const express = require('express');
 const http = require('http');
@@ -5,6 +6,7 @@ const https = require('https');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const routes = require('./routes');
+
 const port = global.port = process.env.PORT || 3100;
 const env = process.env.NODE_ENV || 'development';
 
@@ -41,7 +43,7 @@ app.use((err, req, res, next) => res.sendStatus(500));
 
 // Routes
 app.use('/', routes.root());
-app.use('/compile', routes.compile());
+app.use('/compile', routes.compile(compile));
 app.use('/lang', routes.lang());
 app.use('/L*', routes.lang());
 
