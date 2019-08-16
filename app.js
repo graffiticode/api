@@ -1,4 +1,5 @@
-const {compile} = require('./src/comp');
+const { compile } = require('./src/comp');
+const bodyParser = require('body-parser');
 const errorHandler = require('errorhandler');
 const express = require('express');
 const http = require('http');
@@ -31,11 +32,12 @@ app.all('*', (req, res, next) => {
 app.use(morgan('combined', {
   skip: (req, res) => res.statusCode < 400,
 }));
+app.use(bodyParser.text());
 app.use(express.json({ limit: '50mb' }));
 app.use(methodOverride());
 
 if (process.env.NODE_ENV === 'development') {
-  app.use(errorHandler({dumpExceptions: true, showStack: true}))
+  app.use(errorHandler({ dumpExceptions: true, showStack: true }))
 } else if (process.env.NODE_ENV === 'production') {
   app.use(errorHandler())
 }

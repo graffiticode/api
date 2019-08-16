@@ -1,10 +1,11 @@
 const assert = require('assert');
-const {decodeID, encodeID, objectToID, objectFromID} = require('./id');
-const {delCache, getCache, setCache} = require('./cache');
-const {pingLang, getCompilerVersion} = require('./lang');
-const {getCompilerHost, getCompilerPort, parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./util');
+const { delCache, getCache, setCache } = require('./cache');
+const { InvalidArgumentError } = require('./errors');
+const { decodeID, encodeID, objectToID, objectFromID } = require('./id');
+const { pingLang } = require('./lang');
+const { getCompilerHost, getCompilerPort, parseJSON } = require('./util');
 
-const nilID = encodeID([0,0,0]);
+const nilID = encodeID([0, 0, 0]);
 
 function getLang(ids, resume) {
   resume(null, "L" + ids[0]);
@@ -108,7 +109,7 @@ function comp(auth, lang, code, data, options, resume) {
           'Content-Length': Buffer.byteLength(encodedData),
         },
       };
-      var req = global.protocol.request(reqOptions, function(res) {
+      var req = global.protocol.request(reqOptions, function (res) {
         var data = "";
         res.on('data', function (chunk) {
           data += chunk;
@@ -123,7 +124,7 @@ function comp(auth, lang, code, data, options, resume) {
       });
       req.write(encodedData);
       req.end();
-      req.on('error', function(err) {
+      req.on('error', function (err) {
         console.log("[2] comp() ERROR " + err);
         resume(408);
       });
@@ -135,14 +136,17 @@ function comp(auth, lang, code, data, options, resume) {
 
 function getIDFromType(type) {
   switch (type) {
-  default:
-    return null;
+    default:
+      return null;
   }
 }
 
 function verifyCode(code) {
   // Return code if valid, otherwise return null.
   // TODO verify code.
+  if (!code) {
+    throw new InvalidArgumentError('no code');
+  }
   return code;
 }
 
@@ -159,20 +163,23 @@ function compile(auth, item) {
   //   data is a JSON object to be passed with the code to the compiler.
   //   options is an object defining various contextual values.
   return new Promise(async (accept, reject) => {
-    let langID = item.lang;
-    let codeID = await objectToID(verifyCode(item.code));
-    let dataID = await objectToID(item.data);
-    let dataIDs = dataID === 0 && [0] || [113, dataID, 0];  // L113 is the data language.
-    let id = encodeID([langID, codeID].concat(dataIDs));
-    let options = item.options || {};
-    let t0 = new Date;
-    compileID(auth, id, options, (err, obj) => {
-      if (err) {
-        reject(err);
-      } else {
-        accept(obj)
-      }
-    });
+    try {
+      const langID = item.lang;
+      const codeID = await objectToID(verifyCode(item.code));
+      const dataID = await objectToID(item.data);
+      const dataIDs = dataID === 0 && [0] || [113, dataID, 0];  // L113 is the data language.
+      const id = encodeID([langID, codeID].concat(dataIDs));
+      const options = item.options || {};
+      compileID(auth, id, options, (err, obj) => {
+        if (err) {
+          reject(err);
+        } else {
+          accept(obj)
+        }
+      });
+    } catch (err) {
+      reject(err);
+    }
   });
 }
 

@@ -5,5 +5,5 @@ test: build
 	npm run test
 
 build:
-	mkdir -p lib
+	npm install
 	npm run build

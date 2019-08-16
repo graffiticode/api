@@ -3,7 +3,8 @@ const { expect } = require('chai');
 const {
   getCompilerHost,
   getCompilerPort,
-  isNonEmptyString
+  isNonEmptyString,
+  isNonNullObject,
 } = require('./../src/util');
 
 describe('util', () => {
@@ -47,6 +48,26 @@ describe('util', () => {
     });
     it('should return false for boolean', () => {
       expect(isNonEmptyString(false)).to.be.false;
+    });
+  });
+  describe('isNonNullObject', () => {
+    it('should return true for object', () => {
+      expect(isNonNullObject({})).to.be.true;
+    });
+    it('should return false for null', () => {
+      expect(isNonNullObject(null)).to.be.false;
+    });
+    it('should return false for string', () => {
+      expect(isNonNullObject('foo')).to.be.false;
+    });
+    it('should return false for empty string', () => {
+      expect(isNonNullObject('')).to.be.false;
+    });
+    it('should return false for number', () => {
+      expect(isNonNullObject(42)).to.be.false;
+    });
+    it('should return false for boolean', () => {
+      expect(isNonNullObject(false)).to.be.false;
     });
   });
 });
