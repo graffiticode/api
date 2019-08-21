@@ -8,19 +8,13 @@ const { getCompilerHost, getCompilerPort, parseJSON } = require('./util');
 const nilID = encodeID([0, 0, 0]);
 
 function getLang(ids, resume) {
-  resume(null, "L" + ids[0]);
+  resume(null, 'L' + ids[0]);
 }
 
 function getCode(ids, resume) {
   objectFromID(ids[1])
-    .then(val => {
-      resume(null, val);
-    })
-    .catch(err => {
-      console.log("getCode() err=" + err);
-      console.trace();
-      resume(err);
-    });
+    .then(val => resume(null, val))
+    .catch(resume);
 }
 
 function getData(ids, resume) {
@@ -31,28 +25,21 @@ function getData(ids, resume) {
     assert(ids.length === 3);
     assert(ids[0] === 113);   // L113 code is stored as data not an AST.
     objectFromID(ids[1])
-      .then(val => {
-        resume(null, val);
-      })
-      .catch(err => {
-        console.log("getData() err=" + err);
-        console.trace();
-        resume(err);
-      });
+      .then(val => resume(null, val))
+      .catch(resume);
   }
 }
 
 function compileID(auth, id, options, resume) {
-  let refresh = options.refresh;
-  let dontSave = options.dontSave;
+  const refresh = options.refresh;
   if (id === nilID) {
     resume(null, {});
   } else {
-    let ids = decodeID(id);
+    const ids = decodeID(id);
     if (refresh) {
-      delCache(id, "data");
+      delCache(id, 'data');
     }
-    getCache(id, "data", (err, val) => {
+    getCache(id, 'data', (err, val) => {
       if (val) {
         // Got cached value. We're done.
         resume(err, val);
@@ -66,7 +53,7 @@ function compileID(auth, id, options, resume) {
                 if (err && err.length) {
                   resume(err, null);
                 } else {
-                  assert(code && code.root !== undefined, "Invalid code for item " + ids[1]);
+                  assert(code && code.root !== undefined, 'Invalid code for item ' + ids[1]);
                   // Let downstream compilers know they need to refresh
                   // any data used.
                   comp(auth, lang, code, data, options, (err, obj) => {
@@ -74,7 +61,7 @@ function compileID(auth, id, options, resume) {
                       resume(err);
                     } else {
                       // TODO cache id => obj.
-                      setCache(lang, id, "data", obj);
+                      setCache(lang, id, 'data', obj);
                       resume(null, obj);
                     }
                   });
@@ -92,14 +79,14 @@ function comp(auth, lang, code, data, options, resume) {
   pingLang(lang, pong => {
     if (pong) {
       // Compile ast to obj.
-      var path = "/compile";
-      var encodedData = JSON.stringify({
+      const path = '/compile';
+      const encodedData = JSON.stringify({
         code: code,
         data: data,
         options: options,
         auth: auth,
       });
-      var reqOptions = {
+      const reqOptions = {
         host: getCompilerHost(lang, global.config),
         port: getCompilerPort(lang, global.config),
         path: path,
@@ -109,36 +96,29 @@ function comp(auth, lang, code, data, options, resume) {
           'Content-Length': Buffer.byteLength(encodedData),
         },
       };
-      var req = global.protocol.request(reqOptions, function (res) {
-        var data = "";
-        res.on('data', function (chunk) {
+      const req = global.protocol.request(reqOptions, (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
           data += chunk;
         });
-        res.on('end', function () {
+        res.on('end', () => {
           resume(null, parseJSON(data));
         });
-        res.on('error', function (err) {
-          console.log("[1] comp() ERROR " + err);
+        res.on('error', (err) => {
+          console.log('[1] comp() ERROR ' + err);
           resume(408);
         });
       });
       req.write(encodedData);
       req.end();
-      req.on('error', function (err) {
-        console.log("[2] comp() ERROR " + err);
+      req.on('error', (err) => {
+        console.log('[2] comp() ERROR ' + err);
         resume(408);
       });
     } else {
       resume(404);
     }
   });
-}
-
-function getIDFromType(type) {
-  switch (type) {
-    default:
-      return null;
-  }
 }
 
 function verifyCode(code) {
