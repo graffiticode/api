@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const { compile } = require('./../src/comp');
 const { InvalidArgumentError } = require('./../src/errors');
-const { objectToID } = require('./../src/id');
+const { objectToID, clearCache } = require('./../src/id');
 
 const TIMEOUT_DURATION = 5000;
 
@@ -97,13 +97,59 @@ describe('comp', function () {
   });
 
   describe('validate', () => {
-    it('should through InvalidArgumentError if no code', async () => {
+    beforeEach(async () => await clearCache());
+    it('should throw InvalidArgumentError if no lang', async () => {
       try {
         await compile(null, {});
         throw new Error('compile should have failed');
       } catch (error) {
         expect(error).to.be.instanceOf(InvalidArgumentError);
+        expect(error.message).to.equal('no lang');
+      }
+    });
+    it('should throw InvalidArgumentError if invalid lang', async () => {
+      try {
+        const lang = 'foo';
+        await compile(null, { lang });
+        throw new Error('compile should have failed');
+      } catch (error) {
+        expect(error).to.be.instanceOf(InvalidArgumentError);
+        expect(error.message).to.equal('invalid lang');
+      }
+    });
+    it('should throw InvalidArgumentError if no code', async () => {
+      try {
+        const lang = 0;
+        const data = {};
+        await compile(null, { lang, data });
+        throw new Error('compile should have failed');
+      } catch (error) {
+        expect(error).to.be.instanceOf(InvalidArgumentError);
         expect(error.message).to.equal('no code');
+      }
+    });
+    it('should throw InvalidArgumentError if root is not a number', async () => {
+      try {
+        const lang = 0;
+        const code = { root: 'foo' };
+        const data = {};
+        await compile(null, { lang, code, data });
+        throw new Error('compile should have failed');
+      } catch (error) {
+        expect(error).to.be.instanceOf(InvalidArgumentError);
+        expect(error.message).to.equal('invalid code root');
+      }
+    });
+    it('should throw InvalidArgumentError if root does not exist', async () => {
+      try {
+        const lang = 0;
+        const code = { root: 3 };
+        const data = {};
+        await compile(null, { lang, code, data });
+        throw new Error('compile should have failed');
+      } catch (error) {
+        expect(error).to.be.instanceOf(InvalidArgumentError);
+        expect(error.message).to.equal('code root does not exist');
       }
     });
   });

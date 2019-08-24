@@ -3,7 +3,7 @@ const { delCache, getCache, setCache } = require('./cache');
 const { InvalidArgumentError } = require('./errors');
 const { decodeID, encodeID, objectToID, objectFromID } = require('./id');
 const { pingLang } = require('./lang');
-const { getCompilerHost, getCompilerPort, parseJSON } = require('./util');
+const { getCompilerHost, getCompilerPort, parseJSON, isNonNullObject } = require('./util');
 
 const nilID = encodeID([0, 0, 0]);
 
@@ -104,10 +104,14 @@ function compileID(auth, id, options) {
 }
 
 function verifyCode(code) {
-  // Return code if valid, otherwise return null.
-  // TODO verify code.
-  if (!code) {
+  if (!isNonNullObject(code)) {
     throw new InvalidArgumentError('no code');
+  }
+  if (!Number.isInteger(code.root)) {
+    throw new InvalidArgumentError('invalid code root');
+  }
+  if (!code.hasOwnProperty(code.root)) {
+    throw new InvalidArgumentError('code root does not exist');
   }
   return code;
 }
@@ -124,7 +128,13 @@ async function compile(auth, item) {
   //   code is an AST which may or may not be in the AST store, and
   //   data is a JSON object to be passed with the code to the compiler.
   //   options is an object defining various contextual values.
+  if (!item.hasOwnProperty('lang')) {
+    throw new InvalidArgumentError('no lang');
+  }
   const langID = item.lang;
+  if (!Number.isInteger(langID)) {
+    throw new InvalidArgumentError('invalid lang');
+  }
   const codeID = await objectToID(verifyCode(item.code));
   const dataID = await objectToID(item.data);
   const dataIDs = dataID === 0 && [0] || [113, dataID, 0];  // L113 is the data language.

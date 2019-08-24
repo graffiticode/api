@@ -1,6 +1,8 @@
 const { expect } = require('chai');
-const { decodeID, encodeID, objectToID, objectFromID } = require('./../src/id');
+const { decodeID, encodeID, objectToID, objectFromID, clearCache } = require('./../src/id');
 describe('id', () => {
+  beforeEach(async () => await clearCache());
+
   describe('objectToID', () => {
     it('should return 1 when given {}', async () => {
       expect(
@@ -9,20 +11,29 @@ describe('id', () => {
     })
   });
   describe('objectFromID', () => {
-    it('getting ID for code {}', async () => {
+    it('getting code for simple object', async () => {
+      await objectToID({})
       expect(
         await objectFromID(1)
       ).to.eql({})
     })
-    it('getting code for ID=2', async () => {
+    it('getting code for complex object', async () => {
+      await (objectToID({
+        "1": { "tag": "STR", "elts": ["hello, world!"] },
+        "2": { "tag": "EXPRS", "elts": [1] },
+        "3": { "tag": "PROG", "elts": [2] },
+        "root": 3,
+        "version": "1"
+      }))
       expect(
-        await objectFromID(2)
+        await objectFromID(1)
       ).to.eql({
-        "1":{"tag":"STR","elts":["hello, world!"]},
-        "2":{"tag":"EXPRS","elts":[1]},
-        "3":{"tag":"PROG","elts":[2]},
-        "root":3,
-        "version":"1"})
+        "1": { "tag": "STR", "elts": ["hello, world!"] },
+        "2": { "tag": "EXPRS", "elts": [1] },
+        "3": { "tag": "PROG", "elts": [2] },
+        "root": 3,
+        "version": "1"
+      })
     })
   });
   describe('decodeID', () => {
