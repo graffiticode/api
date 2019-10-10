@@ -1,9 +1,9 @@
 {
   "hosts": {
-    "L0": "l0.artcompiler.com"
+    "L122": "l122.s.acx.ac"
   },
   "ports": {
-    "L0": "443"
+    "L122": "443"
   },
   "protocol": "https",
   "unused": true
