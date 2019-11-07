@@ -29,7 +29,8 @@ module.exports = () => {
       error(item.code, "Invalid code in POST /compile data.");
       let t0 = new Date;
       let val = await compile(auth, item);
-      console.log("POST " + "/compile L" + item.lang + " in " + (new Date - t0) + "ms");
+      let refresh = item.options && item.options.refresh;
+      console.log("POST " + "/compile L" + item.lang + " in " + (new Date - t0) + "ms " + (refresh && "[refresh]" || ""));
       res.status(200).json(val);
     } catch(err) {
       res.status(500).json(err.message);

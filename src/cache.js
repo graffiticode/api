@@ -4,8 +4,16 @@ const DEBUG = process.env.DEBUG_GRAFFITICODE === 'true' || false;
 const localCache = new Map();
 const dontCache = ["L124"];
 
+function logMapElements(value, key, map) {
+  console.log(key);
+}
+
+function dumpCache() {
+  localCache.forEach(logMapElements);
+}
+
 function delCache (id, type) {
-  let key = id + type;
+  let key = id + "." + type;
   localCache.delete(key);
   if (cache) {
     cache.del(key);
@@ -25,7 +33,7 @@ function resizeLocalCache () {
 }
 
 function getCache (id, type, resume) {
-  let key = id + type;
+  let key = id + "." + type;
   let val;
   if ((val = localCache.get(key))) {
     resume(null, val);
@@ -43,7 +51,7 @@ function setCache (lang, id, type, val) {
     if (localCache.size >= MAX_SIZE) {
       resizeLocalCache();
     }
-    let key = id + type;
+    let key = id + "." + type;
     localCache.set(key, val);
     if (cache) {
       cache.set(key, type === "data" ? JSON.stringify(val) : val);
