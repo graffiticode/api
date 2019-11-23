@@ -1,7 +1,7 @@
 const assert = require('assert');
 const {Router} = require('express');
-const {compile} = require('../src/comp');
-const {error} = require('../src/util');
+const {compile} = require('../comp');
+const {error} = require('../util');
 module.exports = () => {
   const router = new Router();
   router.get('/', async (req, res) => {

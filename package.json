@@ -37,7 +37,7 @@
     "start": "node app.js",
     "test": "mocha --reporter spec --recursive",
     "coverage": "nyc npm run test",
-    "build": "tsc",
+    "build": "tsc -p .",
     "lambda:zip": "zip -r function.zip . -x=.git/*",
     "lambda:update": "aws lambda update-function-code --function-name api --zip-file fileb://function.zip",
     "deploy:lambda": "npm run build && npm run lambda:zip && npm run lambda:update"

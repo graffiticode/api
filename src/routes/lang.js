@@ -1,6 +1,6 @@
 const {Router} = require('express');
-const {pingLang} = require('../src/lang');
-const {getCompilerHost, getCompilerPort} = require('../src/util');
+const {pingLang} = require('../lang');
+const {getCompilerHost, getCompilerPort} = require('../util');
 module.exports = () => {
   const router = new Router();
   router.get('/', (req, res) => {
