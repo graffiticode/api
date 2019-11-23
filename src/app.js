@@ -4,11 +4,11 @@ const http = require('http');
 const https = require('https');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
-const routes = require('./src/routes');
+const routes = require('./routes');
 const port = global.port = process.env.PORT || 3100;
 const env = process.env.NODE_ENV || 'development';
 
-global.config = require(process.env.CONFIG || './config.json');
+global.config = require(process.env.CONFIG || './../config.json');
 global.config.useLocalCompiles = process.env.LOCAL_COMPILES === 'true';
 global.protocol = (global.config.useLocalCompiles || global.config.protocol === 'http') && http || https;
 

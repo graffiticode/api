@@ -7,6 +7,6 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN npm install \
-    && npm run build
+  && npm run build
 
-CMD [ "node", "app.js" ]
+CMD [ "node", "src/app.js" ]

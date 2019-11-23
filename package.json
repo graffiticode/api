@@ -34,7 +34,7 @@
     "uglify-js": "^2.7.3"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "node src/app.js",
     "test": "mocha --reporter spec --recursive",
     "coverage": "nyc npm run test",
     "build": "tsc -p .",
