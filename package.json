@@ -8,6 +8,7 @@
     "type": "git",
     "url": "https://github.com/graffiticode/api"
   },
+  "main": "build/src/app.js",
   "dependencies": {
     "aws-sdk": "2.286.2",
     "aws-serverless-express": "^3.3.6",
@@ -34,8 +35,9 @@
     "uglify-js": "^2.7.3"
   },
   "scripts": {
-    "start": "node src/app.js",
-    "test": "mocha --reporter spec --recursive",
+    "start": "node build/src/app.js",
+    "test": "mocha --reporter spec --recursive build/test",
+    "pretest": "npm run build",
     "coverage": "nyc npm run test",
     "build": "tsc -p .",
     "lambda:zip": "zip -r function.zip . -x=.git/*",
