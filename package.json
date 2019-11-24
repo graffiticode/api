@@ -39,6 +39,7 @@
     "test": "mocha --reporter spec --recursive build/test",
     "pretest": "npm run build",
     "coverage": "nyc npm run test",
+    "prebuild": "rm -rf build",
     "build": "tsc -p .",
     "lambda:zip": "zip -r function.zip . -x=.git/*",
     "lambda:update": "aws lambda update-function-code --function-name api --zip-file fileb://function.zip",
