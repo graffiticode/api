@@ -1,8 +1,9 @@
-# Graffiticode API Gateway
+Graffiticode API Gateway
+---
 
-## Getting started
+# Getting started
 
-### Steps include (Mac OSX)
+## Steps include (Mac OSX)
 
 * Clone and initialize the GC repo.
   * `$ git clone git@github.com:graffiticode/api.git`
@@ -16,17 +17,17 @@
   * `$ export LOCAL_COMPILES=false`
   * `$ make test`
 
-## Deploying
+# Deploying
 
-### AWS Lambda
-This document explains the steps to deploy `graffiticode/api` on AWS Lambda. To
+## AWS Lambda
+Steps to deploy `graffiticode/api` on AWS Lambda. To
 get a first look at deploying an AWS Lambda function see this
 [guide](https://docs.aws.amazon.com/lambda/latest/dg/with-userapp.html).
 
-#### Prerequisites
+### Prerequisites
 1. Install and configure the AWS cli [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 
-#### Setup the Execution Role
+### Setup the Execution Role
 1. Navigate to this [guide](https://docs.aws.amazon.com/lambda/latest/dg/with-userapp.html)
 and follow the instructions to `Create the Execution Role`.
 1. Navigate to the created [execution role](https://console.aws.amazon.com/iam/home#/roles/lambda-cli-role)
@@ -35,8 +36,22 @@ and copy the `Role ARN`
 under the `create` target in the `src/deploy/Makefile`
 (ex. `--role arn:aws:iam::903691265300:role/lambda-cli-role`)
 
-#### Manage the Lambda function
+### Manage the Lambda function
 1. To create the function, run `make -f src/deploy/Makefile create`. <br />
    _NOTE: only need to run this once_
 1. To update the function, run `make -f src/deploy/Makefile update`. <br />
    _NOTE: do this whenever code is updated_
+
+# Contributing
+
+## Development
+
+```bash
+npm run dev
+```
+
+This is the npm script to clean, build, test, and run the application on file changes.
+
+## License
+
+[MIT](LICENSE.txt)
