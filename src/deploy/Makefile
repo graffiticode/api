@@ -1,27 +1,28 @@
 default: update
 
 clean:
-	rm -rf node_modules function.zip
+	rm -rf build node_modules function.zip
 
-build:
+build: clean
 	npm i
 	npm run build
 
 zip: build
 	npm ci --production
 	zip -r \
-		--exclude="*deploy/*" \
-		--exclude="*test/*" \
-		--exclude="*.git/*" \
-		function.zip .
+		function.zip \
+		package.json \
+		package-lock.json \
+		node_modules \
+		build/src
 	npm i
 
 create: zip
 	aws lambda create-function \
 		--function-name api \
 		--zip-file fileb://function.zip \
-		--handler lambda.handler \
-		--runtime nodejs10.x \
+		--handler build.src.deploy.lambdaHandler \
+		--runtime nodejs12.x \
 		--role arn:aws:iam::903691265300:role/lambda-cli-role
 
 update: zip
