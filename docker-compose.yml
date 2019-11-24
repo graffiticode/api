@@ -5,10 +5,10 @@ services:
         build:
             context: .
         volumes:
-            - .:/usr/src/app
+            - .:/src
         environment:
-            CONFIG: "./config-compose.json"
-            PORT: 80
+            CONFIG: "/src/config-compose.json"
+            PORT: 3000
         networks:
             - net
             - developer_net
@@ -16,7 +16,7 @@ services:
             - "learnosity.app_name=graffiticode"
             - "learnosity.app_root=${PWD}"
             - "traefik.frontend.rule=Host:gc.dev.learnosity.com"
-            - "traefik.port=80"
+            - "traefik.port=3000"
             - "traefik.docker.network=developer_net"
             - "traefik.frontend.entryPoints=https"
             - "traefik.enable=true"
