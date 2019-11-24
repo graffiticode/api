@@ -11,9 +11,9 @@ const env = process.env.NODE_ENV || 'development';
 // This line is required to ensure the typescript compiler moves the default
 // config into the build directory.
 // TODO(kevindyer) Refactor the creation of the app to inject the config
-require('./../config.json');
+require('./../configs/config.json');
 
-global.config = require(process.env.CONFIG || './../config.json');
+global.config = require(process.env.CONFIG || './../configs/config.json');
 global.config.useLocalCompiles = process.env.LOCAL_COMPILES === 'true';
 global.protocol = (global.config.useLocalCompiles || global.config.protocol === 'http') && http || https;
 
@@ -38,7 +38,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(methodOverride());
 
 if (process.env.NODE_ENV === 'development') {
-  app.use(errorHandler({dumpExceptions: true, showStack: true}))
+  app.use(errorHandler({ dumpExceptions: true, showStack: true }))
 } else if (process.env.NODE_ENV === 'production') {
   app.use(errorHandler())
 }

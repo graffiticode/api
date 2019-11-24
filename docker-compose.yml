@@ -7,7 +7,7 @@ services:
         volumes:
             - .:/src
         environment:
-            CONFIG: "/src/config-compose.json"
+            CONFIG: "/src/configs/config-compose.json"
             PORT: 3000
         networks:
             - net
