@@ -1,13 +1,13 @@
-version: '3.7'
+version: "3.7"
 
 services:
     graffiticode:
         build:
             context: .
         volumes:
-            - .:/src
+            - .:/code
         environment:
-            CONFIG: "/src/configs/config-compose.json"
+            CONFIG: "/code/configs/config-compose.json"
             PORT: 3000
         networks:
             - net

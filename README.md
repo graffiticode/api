@@ -19,6 +19,14 @@ Graffiticode API Gateway
 
 # Deploying
 
+## Docker Compose
+The graffiticode api application can be run with [Docker Compose](https://docs.docker.com/compose/).
+
+```bash
+docker network create developer_net
+docker-compose up -d
+```
+
 ## AWS Lambda
 Steps to deploy `graffiticode/api` on AWS Lambda. To
 get a first look at deploying an AWS Lambda function see this
