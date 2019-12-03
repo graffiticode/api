@@ -1,9 +1,9 @@
 {
   "hosts": {
-    "L122": "122.acx.ac"
+    "L0": "l0.acx.ac"
   },
   "ports": {
-    "L122": "443"
+    "L0": "443"
   },
   "protocol": "https",
   "unused": true
