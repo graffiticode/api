@@ -9,3 +9,5 @@ build:
 
 dev:
 	npm run dev
+
+.PHONY: build test
