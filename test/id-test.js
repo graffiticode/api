@@ -14,7 +14,7 @@ describe('id', () => {
         await objectFromID(1)
       ).to.eql({})
     })
-    it('getting code for ID=2', async () => {
+    it.skip('getting code for ID=2', async () => {
       expect(
         await objectFromID(2)
       ).to.eql({

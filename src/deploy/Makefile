@@ -4,7 +4,7 @@ clean:
 	rm -rf build node_modules function.zip
 
 build: clean
-	npm i
+	npm install
 	npm run build
 
 zip: build
@@ -14,14 +14,15 @@ zip: build
 		package.json \
 		package-lock.json \
 		node_modules \
+		build/configs \
 		build/src
-	npm i
+	npm install
 
 create: zip
 	aws lambda create-function \
 		--function-name api \
 		--zip-file fileb://function.zip \
-		--handler build.src.deploy.lambdaHandler \
+		--handler build/src/deploy/index.lambdaHandler \
 		--runtime nodejs12.x \
 		--role arn:aws:iam::903691265300:role/lambda-cli-role
 
