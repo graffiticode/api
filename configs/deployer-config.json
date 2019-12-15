@@ -1,0 +1,48 @@
+{
+  "projects": {
+    "L0": {
+      "repository": {
+        "url": "https://github.com/graffiticode/L0"
+      },
+      "build": {
+        "fileList": [
+          "lib",
+          "pub",
+          "routes",
+          "app.js",
+          "config.json",
+          "lambda.js"
+        ]
+      },
+      "deploy": {
+        "handler": "lambda.handler"
+      }
+    },
+    "L1": {
+      "repository": {
+        "url": "https://github.com/graffiticode/L1"
+      },
+      "build": {
+        "scripts": {
+          "build": "compile"
+        }
+      },
+      "deploy": {
+        "handler": "build/src/lambda.handler"
+      }
+    },
+    "api": {
+      "type": "gateway",
+      "repository": {
+        "url": "https://github.com/graffiticode/api"
+      },
+      "deploy": {
+        "handler": "build/src/deploy/index.lambdaHandler"
+      }
+    }
+  },
+  "sync": true,
+  "aws": {
+    "region": "us-east-2"
+  }
+}

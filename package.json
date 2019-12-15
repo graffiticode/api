@@ -27,6 +27,7 @@
     "graceful-fs": "^4.1.15",
     "jest": "^24.9.0",
     "log-update": "^3.3.0",
+    "minimist": "^1.2.0",
     "mocha": "^6.1.3",
     "nodegit": "^0.26.2",
     "nodemon": "^2.0.1",
@@ -44,6 +45,6 @@
     "test": "jest build/",
     "dev": "nodemon --exec \"npm test && npm start\" --ignore \"build\"",
     "coverage": "nyc npm run test",
-    "deployer": "node build/tools/deployer"
+    "deployer": "node build/tools/deployer -c configs/deployer-config.json"
   }
 }
