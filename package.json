@@ -11,13 +11,11 @@
   "main": "build/src/app.js",
   "dependencies": {
     "aws-serverless-express": "^3.3.6",
-    "body-parser": "latest",
-    "errorhandler": "latest",
+    "errorhandler": "^1.5.1",
     "express": "^4.16.4",
-    "express-session": "^1.15.6",
     "hashids": "1.1.1",
-    "method-override": "latest",
-    "morgan": "latest",
+    "method-override": "^3.0.0",
+    "morgan": "^1.9.1",
     "pg": "6.1.6",
     "redis": "2.6.3"
   },
