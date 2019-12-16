@@ -1,19 +1,31 @@
-export default function buildGetCompiler({ gitGetter, localGetter }) {
-  return async function getCompiler({ compiler, context }) {
-    if (!compiler) {
-      throw new Error('invalid compiler');
+export default function buildInstallProject({ gitInstaller, localInstaller }) {
+  return async function installProject({ name, config, context }) {
+    if (!config) {
+      throw new Error('project must have a config');
     }
-    const { repository } = compiler;
-    if (!repository) {
-      throw new Error('invalid compiler.repository');
+    if (!config.install) {
+      throw new Error('project config must contain an install property');
     }
-    const { type } = repository;
+    if (!context) {
+      throw new Error('project must have a context');
+    }
+    let { type } = config.install;
+    let installer;
+    if (!type) {
+      type = 'git';
+    }
     if ('git' === type) {
-      return await gitGetter({ repository, context });
+      installer = gitInstaller;
+    } else if ('local' === type) {
+      installer = localInstaller;
+    } else {
+      throw new Error(`unknown install type: ${type}`);
     }
-    if ('local' === type) {
-      return await localGetter({ repository, context });
+
+    await installer({ name, config, context });
+
+    if (!context.installPath) {
+      throw new Error(`${type} installer did not add installPath to context`);
     }
-    throw new Error(`unknown repository type: ${type}`);
   };
 }

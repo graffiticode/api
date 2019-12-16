@@ -1,12 +1,15 @@
-export default function buildLocalGetter({ path, displayTextWithSpinner }) {
-  return async function localGetter({ repository, context }) {
-    const { cancel } = displayTextWithSpinner({ text: `Install compiler from local...` });
+export default function buildLocalInstaller({ path, process, displayTextWithSpinner }) {
+  return async function localInstaller({ name, config, context }) {
+    const { cancel } = displayTextWithSpinner({ text: `Install ${name} from local...` });
     try {
-      let getPath = repository.path;
-      if (!path.isAbsolute(getPath)) {
-        getPath = path.resolve(process.cwd(), getPath);
+      let installPath = config.install.path;
+      if (!installPath) {
+        throw new Error('local install config must contain the path property');
       }
-      context.getPath = getPath;
+      if (!path.isAbsolute(installPath)) {
+        installPath = path.resolve(process.cwd(), installPath);
+      }
+      context.installPath = installPath;
 
       cancel('done');
     } catch (err) {
