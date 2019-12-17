@@ -1,16 +1,28 @@
-export default function buildDeployCompiler({ awsLambdaDeployer }) {
-  return async function deployCompiler({ compiler, context }) {
-    if (!compiler) {
-      throw new Error('invalid compiler');
+export default function buildDeployProject({ awsLambdaDeployer }) {
+  return async function deployProject({ name, config, context }) {
+    if (!config) {
+      throw new Error('project must have a config');
     }
-    const { deploy } = compiler;
-    if (!deploy) {
-      throw new Error('invalid compiler.deploy');
+    if (!context) {
+      throw new Error('project must have a context');
     }
-    const { type } = deploy;
+    if (!context.installPath) {
+      throw new Error(`context must have an installPath`);
+    }
+    if (!context.buildPath) {
+      throw new Error(`context must have an buildPath`);
+    }
+
+    const { deploy = {} } = config;
+    const { type = 'aws-lambda' } = deploy;
+
+    let deployer;
     if ('aws-lambda' === type) {
-      return await awsLambdaDeployer({ compiler, deploy, context });
+      deployer = awsLambdaDeployer;
+    } else {
+      throw new Error(`unknown deploy type: ${type}`);
     }
-    throw new Error(`unknown deploy type: ${type}`);
+
+    await deployer({ name, config, context });
   };
 }

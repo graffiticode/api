@@ -2,18 +2,22 @@ import buildGitInstaller from './git';
 
 describe('git', () => {
   let mkdtemp;
+  let join;
+  let tmpdir;
   let Clone;
   let cancel;
   let displayTextWithSpinner;
   let gitInstaller;
   beforeEach(() => {
     mkdtemp = jest.fn().mockResolvedValue('/tmp/123');
+    join = jest.fn().mockReturnValue('/tmp/123');
+    tmpdir = jest.fn().mockReturnValue('/tmp');
     Clone = {
       clone: jest.fn().mockResolvedValue()
     };
     cancel = jest.fn();
     displayTextWithSpinner = jest.fn().mockReturnValue({ cancel });
-    gitInstaller = buildGitInstaller({ mkdtemp, Clone, displayTextWithSpinner });
+    gitInstaller = buildGitInstaller({ Clone, displayTextWithSpinner, join, mkdtemp, tmpdir });
   });
   it('should reject if install config does not contain the url property', async () => {
     // Arrange

@@ -1,8 +1,8 @@
-export default function buildGitInstaller({ mkdtemp, Clone, displayTextWithSpinner }) {
+export default function buildGitInstaller({ Clone, displayTextWithSpinner, join, mkdtemp, tmpdir }) {
   return async function gitInstaller({ name, config, context }) {
     const { cancel } = displayTextWithSpinner({ text: `Install ${name} with git...` });
     try {
-      context.installPath = await mkdtemp({ prefix: `graffiticode-install` });
+      context.installPath = await mkdtemp(join(tmpdir(), `graffiticode-install-`));
 
       const { url, branch } = config.install;
       if (!url) {

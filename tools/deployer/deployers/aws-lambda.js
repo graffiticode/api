@@ -33,19 +33,19 @@ export default function buildAwsLambdaDeployer({ displayTextWithSpinner, delay, 
   const retryingCreateFunction = buildRetryingCreateFunction({ Lambda, delay, maxAttempts: 5 });
   const updateCode = buildUpdateCode({ fs, Lambda, getRole, retryingCreateFunction });
   const createApiGateway = buildCreateApiGateway({ ApiGatewayV2, getRole });
-  return async function awsLambdaDeployer({ compiler, deploy, context }) {
-    const { cancel, updateText } = displayTextWithSpinner({ text: 'Deploy compiler to AWS Lambda[init]...' });
+  return async function awsLambdaDeployer({ name, config, context }) {
+    const { cancel, updateText } = displayTextWithSpinner({ text: `Deploy ${name} to AWS Lambda[init]...` });
     try {
-      updateText('Deploy compiler to AWS Lambda[zip]...');
-      context.zipfilePath = await zip({ deploy, context });
+      updateText(`Deploy ${name} to AWS[zip]...`);
+      await zip({ config, context });
 
-      updateText('Deploy compiler to AWS[Lambda]...');
-      context.lambda = await updateCode({ compiler, deploy, context });
+      updateText(`Deploy ${name} to AWS[Lambda]...`);
+      await updateCode({ config, context });
 
-      updateText('Deploy compiler to AWS[API Gateway]...');
-      createApiGateway({ context });
+      updateText(`Deploy ${name} to AWS[API Gateway]...`);
+      await createApiGateway({ config, context });
 
-      updateText(`Deploy compiler to AWS Lambda...`);
+      updateText(`Deploy ${name} to AWS Lambda...`);
       cancel('done');
     } catch (err) {
       cancel('failed');
@@ -87,9 +87,9 @@ function buildRetryingCreateFunction({ Lambda, maxAttempts, delay }) {
 }
 
 function buildUpdateCode({ fs, Lambda, getRole, retryingCreateFunction }) {
-  return async function updateCode({ context, compiler, deploy }) {
+  return async function updateCode({ name, config, context }) {
     const lambda = new Lambda({ region: context.config.aws.region });
-    const FunctionName = `graffiticode-${compiler.name}`;
+    const FunctionName = `graffiticode-${name}`;
     const ZipFile = await fs.readFile(context.zipfilePath);
     try {
       await lambda.updateFunctionCode({ FunctionName, ZipFile }).promise();
@@ -110,13 +110,14 @@ function buildUpdateCode({ fs, Lambda, getRole, retryingCreateFunction }) {
           Code: {
             ZipFile,
           },
-          Handler: deploy.handler,
+          Handler: config.deploy.handler,
           Role: functionRole.Arn,
           Runtime: 'nodejs12.x',
         }
       });
     }
-    return await lambda.getFunction({ FunctionName }).promise();
+    const lambda = await lambda.getFunction({ FunctionName }).promise();
+    context.lambda = lambda;
   };
 }
 
