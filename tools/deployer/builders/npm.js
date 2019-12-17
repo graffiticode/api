@@ -32,7 +32,7 @@ export default function buildNpmBuilder({ fs, path, exec, mkdtemp, displayTextWi
             await fs.copyFile(path.join(context.getPath, filepath), path.join(context.buildPath, filepath));
           }
         } catch (err) {
-          console.log(`Failed to moce file ${path.join(context.getPath, filepath)}: ${err.message}`, err);
+          console.log(`Failed to move file ${path.join(context.getPath, filepath)}: ${err.message}`, err);
         }
       }));
 

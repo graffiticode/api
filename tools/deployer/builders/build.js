@@ -1,16 +1,28 @@
 export default function buildBuildCompiler({ npmBuilder }) {
-  return async function buildCompiler({ compiler, context }) {
-    if (!compiler) {
-      throw new Error('invalid compiler');
+  return async function buildCompiler({ name, config, context }) {
+    if (!config) {
+      throw new Error('project must have a config');
     }
-    const { build } = compiler;
-    if (!build) {
-      throw new Error('invalid compiler.build');
+    if (!context) {
+      throw new Error('project must have a context');
     }
-    const { type } = build;
+    if (!context.installPath) {
+      throw new Error(`context must have an installPath`);
+    }
+    const { build = {} } = config;
+    let { type = 'npm' } = build;
+
+    let builder;
     if ('npm' === type) {
-      return await npmBuilder({ build, context });
+      builder = npmBuilder;
+    } else {
+      throw new Error(`unknown builder type: ${type}`);
     }
-    throw new Error(`unknown build type: ${type}`);
+
+    await builder({ name, config, context });
+
+    if (!context.buildPath) {
+      throw new Error(`${type} builder did not add buildPath to context`);
+    }
   };
 }
