@@ -41,12 +41,13 @@ export function delay(ms) {
 
 export async function rmdirRecursive(dirpath) {
   const files = await fsPromise.readdir(dirpath);
-  const stats = await Promise.all(files.map(file => path.join(dirpath, file)).map(fsPromise.stat));
-  const combined = files.map((file, i) => {
-    return { file: path.join(dirpath, file), stat: stats[i] };
+  const filepaths = files.map(file => path.join(dirpath, file));
+  const stats = await Promise.all(filepaths.map((filepath) => fsPromise.stat(filepath)));
+  const combined = filepaths.map((filepath, i) => {
+    return { filepath, stat: stats[i] };
   });
-  await Promise.all(combined.filter(({ stat }) => stat.isDirectory()).map(({ file }) => rmdirRecursive(file)));
-  await Promise.all(combined.filter(({ stat }) => stat.isFile()).map(({ file }) => fsPromise.unlink(file)));
+  await Promise.all(combined.filter(({ stat }) => stat.isDirectory()).map(({ filepath }) => rmdirRecursive(filepath)));
+  await Promise.all(combined.filter(({ stat }) => stat.isFile()).map(({ filepath }) => fsPromise.unlink(filepath)));
   await fsPromise.rmdir(dirpath);
 }
 

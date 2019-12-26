@@ -1,6 +1,6 @@
 import { tmpdir } from 'os';
 import { join } from 'path';
-import { fsPromise } from './../utils';
+import { fsPromise, rmdirRecursive } from './../utils';
 
 import buildMakeConfig from './config';
 
@@ -11,12 +11,14 @@ describe('config', () => {
   });
   afterEach(async () => {
     try {
-      await fsPromise.rmdir(configDir);
+      await rmdirRecursive(configDir);
     } catch (err) {
+      console.log(err.message);
       if (err.code != 'ENOTEMPTY') {
         throw err;
       }
-      console.log(`Unabled to call fs.rmdir: ${err.message}`);
+      console.log(`Unabled to call rmdirRecursive: ${err.message}`);
+      console.log(err.stack);
     }
   });
   it('should reject if no config filepath is given', async () => {
