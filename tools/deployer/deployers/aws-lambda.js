@@ -28,22 +28,22 @@ const apiAssumeRolePolicyDocument = JSON.stringify({
 });
 const apiPolicyArn = 'arn:aws:iam::aws:policy/service-role/AWSLambdaRole';
 
-export default function buildAwsLambdaDeployer({ displayTextWithSpinner, delay, fs, zip, IAM, Lambda, ApiGatewayV2 }) {
+export default function buildAwsLambdaDeployer({ displayTextWithSpinner, delay, readFile, zip, IAM, Lambda, ApiGatewayV2 }) {
   const getRole = buildGetRole({ IAM });
   const retryingCreateFunction = buildRetryingCreateFunction({ Lambda, delay, maxAttempts: 5 });
-  const updateCode = buildUpdateCode({ fs, Lambda, getRole, retryingCreateFunction });
+  const updateCode = buildUpdateCode({ readFile, Lambda, getRole, retryingCreateFunction });
   const createApiGateway = buildCreateApiGateway({ ApiGatewayV2, getRole });
   return async function awsLambdaDeployer({ name, config, context }) {
     const { cancel, updateText } = displayTextWithSpinner({ text: `Deploy ${name} to AWS Lambda[init]...` });
     try {
       updateText(`Deploy ${name} to AWS[zip]...`);
-      await zip({ config, context });
+      await zip({ name, config, context });
 
       updateText(`Deploy ${name} to AWS[Lambda]...`);
-      await updateCode({ config, context });
+      await updateCode({ name, config, context });
 
       updateText(`Deploy ${name} to AWS[API Gateway]...`);
-      await createApiGateway({ config, context });
+      await createApiGateway({ name, config, context });
 
       updateText(`Deploy ${name} to AWS Lambda...`);
       cancel('done');
@@ -86,11 +86,11 @@ function buildRetryingCreateFunction({ Lambda, maxAttempts, delay }) {
   };
 }
 
-function buildUpdateCode({ fs, Lambda, getRole, retryingCreateFunction }) {
+function buildUpdateCode({ readFile, Lambda, getRole, retryingCreateFunction }) {
   return async function updateCode({ name, config, context }) {
     const lambda = new Lambda({ region: context.config.aws.region });
     const FunctionName = `graffiticode-${name}`;
-    const ZipFile = await fs.readFile(context.zipfilePath);
+    const ZipFile = await readFile(context.zipfilePath);
     try {
       await lambda.updateFunctionCode({ FunctionName, ZipFile }).promise();
     } catch (err) {

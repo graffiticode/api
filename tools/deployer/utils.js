@@ -7,6 +7,7 @@ import { dots } from 'cli-spinners';
 
 if (!fsPromise) {
   fsPromise = {
+    copyFile: promisify(fs.copyFile),
     mkdtemp: promisify(fs.mkdtemp),
     readdir: promisify(fs.readdir),
     readFile: promisify(fs.readFile),
