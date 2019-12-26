@@ -116,8 +116,7 @@ function buildUpdateCode({ fs, Lambda, getRole, retryingCreateFunction }) {
         }
       });
     }
-    const lambda = await lambda.getFunction({ FunctionName }).promise();
-    context.lambda = lambda;
+    context.lambda = await lambda.getFunction({ FunctionName }).promise();
   };
 }
 

@@ -1,4 +1,4 @@
-export default function buildLocalInstaller({ path, process, displayTextWithSpinner }) {
+export default function buildLocalInstaller({ resolve, isAbsolute, process, displayTextWithSpinner }) {
   return async function localInstaller({ name, config, context }) {
     const { cancel } = displayTextWithSpinner({ text: `Install ${name} from local...` });
     try {
@@ -6,8 +6,8 @@ export default function buildLocalInstaller({ path, process, displayTextWithSpin
       if (!installPath) {
         throw new Error('local install config must contain the path property');
       }
-      if (!path.isAbsolute(installPath)) {
-        installPath = path.resolve(process.cwd(), installPath);
+      if (!isAbsolute(installPath)) {
+        installPath = resolve(process.cwd(), installPath);
       }
       context.installPath = installPath;
 

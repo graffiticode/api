@@ -1,4 +1,4 @@
-import path from 'path';
+import {isAbsolute, resolve} from 'path';
 import buildLocalInstaller from './local';
 
 describe('local', () => {
@@ -6,7 +6,7 @@ describe('local', () => {
     // Arrange
     const cancel = jest.fn();
     const displayTextWithSpinner = jest.fn().mockReturnValue({ cancel });
-    const localInstaller = buildLocalInstaller({ path, displayTextWithSpinner });
+    const localInstaller = buildLocalInstaller({ isAbsolute, resolve, displayTextWithSpinner });
     const project = {
       config: {
         install: {
@@ -32,7 +32,7 @@ describe('local', () => {
     };
     const cancel = jest.fn();
     const displayTextWithSpinner = jest.fn().mockReturnValue({ cancel });
-    const localInstaller = buildLocalInstaller({ path, process, displayTextWithSpinner });
+    const localInstaller = buildLocalInstaller({ isAbsolute, resolve, process, displayTextWithSpinner });
     const project = {
       config: {
         install: {
@@ -47,7 +47,7 @@ describe('local', () => {
     await expect(localInstaller(project)).resolves.toBe();
 
     // Assert
-    expect(project).toHaveProperty('context.installPath', path.resolve('/bar', 'foo'));
+    expect(project).toHaveProperty('context.installPath', resolve('/bar', 'foo'));
     expect(displayTextWithSpinner).toHaveBeenCalledTimes(1);
     expect(cancel).toHaveBeenCalledWith('done');
   });
@@ -58,7 +58,7 @@ describe('local', () => {
     };
     const cancel = jest.fn();
     const displayTextWithSpinner = jest.fn().mockReturnValue({ cancel });
-    const localInstaller = buildLocalInstaller({ path, process, displayTextWithSpinner });
+    const localInstaller = buildLocalInstaller({ isAbsolute, resolve, process, displayTextWithSpinner });
     const project = {
       config: {
         install: {
