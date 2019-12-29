@@ -1,4 +1,4 @@
-export default function buildRunProjects({ runProject }) {
+export default function buildRunProjects({ runProject, postRunProject }) {
   return async function runProjects({ config }) {
     let projects = [];
     if (config.projects) {
@@ -6,7 +6,10 @@ export default function buildRunProjects({ runProject }) {
         return {
           name,
           config: config.projects[name],
-          context: { config },
+          context: {
+            config,
+            callbacks: []
+          }
         }
       });
     }
@@ -17,5 +20,9 @@ export default function buildRunProjects({ runProject }) {
     }
 
     await Promise.all(projects.map(p => runProject(p)));
+
+    await Promise.all(projects.reduce((callbacks, project) => [...callbacks, ...project.context.callbacks], []).map(c => c(projects)));
+
+    await Promise.all(projects.filter(p => p.config.postRun).map(p => postRunProject(projects)));
   };
 }

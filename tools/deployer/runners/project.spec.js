@@ -1,4 +1,4 @@
-import buildRunProject from './project';
+import { buildRunProject } from './project';
 
 describe('project', () => {
   it('should call install, build, and deploy project', async () => {
