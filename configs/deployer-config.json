@@ -32,7 +32,7 @@
       }
     },
     "api": {
-      "type": "gateway",
+      "type": "api",
       "install": {
         "url": "https://github.com/graffiticode/api"
       },

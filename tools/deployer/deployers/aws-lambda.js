@@ -45,6 +45,17 @@ export default function buildAwsLambdaDeployer({ displayTextWithSpinner, delay, 
       updateText(`Deploy ${name} to AWS[API Gateway]...`);
       await createApiGateway({ name, config, context });
 
+      if (config.type === 'api') {
+        context.callbacks.push(async (projects) => {
+          console.log();
+          projects.filter(p => p.config.type !== 'api').forEach(p => console.log(`${p.name}: ${p.context.api.ApiEndpoint}`));
+          console.log();
+          const { cancel, updateText } = displayTextWithSpinner({ text: `Configuring ${name} AWS Lambda...` });
+          await delay(2000);
+          cancel('done');
+        });
+      }
+
       updateText(`Deploy ${name} to AWS Lambda...`);
       cancel('done');
     } catch (err) {
