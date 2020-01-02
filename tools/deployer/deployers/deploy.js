@@ -1,4 +1,4 @@
-export default function buildDeployProject({ awsLambdaDeployer }) {
+export default function buildDeployProject({ lambdaDeployer }) {
   return async function deployProject({ name, config, context }) {
     if (!config) {
       throw new Error('project must have a config');
@@ -18,7 +18,7 @@ export default function buildDeployProject({ awsLambdaDeployer }) {
 
     let deployer;
     if ('aws-lambda' === type) {
-      deployer = awsLambdaDeployer;
+      deployer = lambdaDeployer;
     } else {
       throw new Error(`unknown deploy type: ${type}`);
     }

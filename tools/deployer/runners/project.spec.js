@@ -10,7 +10,7 @@ describe('project', () => {
     const project = { name: 'foo', config: { value: 42 }, context: {} };
 
     // Act
-    await expect(runProject(project)).resolves.toBe();
+    await expect(runProject(project)).resolves.toStrictEqual({ err: false });
 
     // Assert
     expect(installProject).toHaveBeenCalledWith(project);
@@ -26,7 +26,7 @@ describe('project', () => {
     const project = { name: 'foo', config: { value: 42 }, context: {} };
 
     // Act
-    await expect(runProject(project)).rejects.toThrow('foo');
+    await expect(runProject(project)).resolves.toStrictEqual({ err: true });
 
     // Assert
   });
@@ -39,7 +39,7 @@ describe('project', () => {
     const project = { name: 'foo', config: { value: 42 }, context: {} };
 
     // Act
-    await expect(runProject(project)).rejects.toThrow('foo');
+    await expect(runProject(project)).resolves.toStrictEqual({ err: true });
 
     // Assert
     expect(installProject).toHaveBeenCalledWith(project);
@@ -53,7 +53,7 @@ describe('project', () => {
     const project = { name: 'foo', config: { value: 42 }, context: {} };
 
     // Act
-    await expect(runProject(project)).rejects.toThrow('foo');
+    await expect(runProject(project)).resolves.toStrictEqual({ err: true });
 
     // Assert
     expect(installProject).toHaveBeenCalledWith(project);

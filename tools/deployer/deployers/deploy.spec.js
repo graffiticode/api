@@ -71,7 +71,7 @@ describe('deploy', () => {
 
     // Assert
   });
-  it('should awsLambdaDeployer if no deploy config', async () => {
+  it('should lambdaDeployer if no deploy config', async () => {
     // Arrange
     const project = {
       config: {},
@@ -80,14 +80,14 @@ describe('deploy', () => {
         buildPath: '/tmp/build'
       }
     };
-    const awsLambdaDeployer = jest.fn().mockResolvedValue();
-    const deployProject = buildDeployProject({ awsLambdaDeployer });
+    const lambdaDeployer = jest.fn().mockResolvedValue();
+    const deployProject = buildDeployProject({ lambdaDeployer });
 
     // Act
     await expect(deployProject(project)).resolves.toBe();
 
     // Assert
-    expect(awsLambdaDeployer).toHaveBeenCalledTimes(1);
-    expect(awsLambdaDeployer).toHaveBeenCalledWith(project);
+    expect(lambdaDeployer).toHaveBeenCalledTimes(1);
+    expect(lambdaDeployer).toHaveBeenCalledWith(project);
   });
 });

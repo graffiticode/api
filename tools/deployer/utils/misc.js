@@ -1,8 +1,6 @@
 import fs, { promises as fsPromise } from 'fs';
-import os from 'os';
 import path from 'path';
 import { promisify } from 'util';
-import logUpdate from 'log-update';
 import { dots } from 'cli-spinners';
 
 if (!fsPromise) {
@@ -18,7 +16,7 @@ if (!fsPromise) {
   };
 }
 
-function buildPrintLines({ lines, logUpdate }) {
+export function buildPrintLines({ lines, logUpdate }) {
   return function printLines() {
     if (lines.length < 1) {
       logUpdate.clear();
@@ -59,9 +57,7 @@ function buildUpdateFrame({ info, printLines }) {
   };
 }
 
-export function buildDisplayTextWithSpinner({ logUpdate }) {
-  const lines = [];
-  const printLines = buildPrintLines({ lines, logUpdate });
+export function buildDisplayTextWithSpinner({ lines, printLines, logUpdate }) {
   return function displayTextWithSpinner({ text, spinner = dots}) {
     const info = {
       text,
@@ -81,8 +77,6 @@ export function buildDisplayTextWithSpinner({ logUpdate }) {
   };
 }
 
-const displayTextWithSpinner = buildDisplayTextWithSpinner({ logUpdate });
-
 export function delay(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
@@ -101,5 +95,4 @@ export async function rmdirRecursive(dirpath) {
 
 export {
   fsPromise,
-  displayTextWithSpinner,
 };

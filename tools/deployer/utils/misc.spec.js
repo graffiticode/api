@@ -1,4 +1,4 @@
-import {displayTextWithSpinner, delay} from './utils';
+import { displayTextWithSpinner, delay } from './index';
 
 const DURATION_MIN = 10;
 const DURATION_MAX = 50;

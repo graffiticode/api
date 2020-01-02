@@ -21,7 +21,9 @@ export default function buildRunProjects({ runProject, postRunProject }) {
 
     await Promise.all(projects.map(p => runProject(p)));
 
-    await Promise.all(projects.reduce((callbacks, project) => [...callbacks, ...project.context.callbacks], []).map(c => c(projects)));
+    await Promise.all(projects
+      .reduce((callbacks, project) => [...callbacks, ...project.context.callbacks], [])
+      .map(c => c({ projects })));
 
     await Promise.all(projects.filter(p => p.config.postRun).map(p => postRunProject(projects)));
   };

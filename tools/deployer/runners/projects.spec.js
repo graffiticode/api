@@ -101,6 +101,6 @@ describe('projects', () => {
     expect(runProject).toHaveBeenCalledWith({ name: 'foo', config: {}, context: { config, callbacks: [ callback ] } });
     expect(postRunProject).toHaveBeenCalledTimes(0);
     expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith([{ name: 'foo', config: { }, context: { config, callbacks: [ callback ] } }]);
+    expect(callback).toHaveBeenCalledWith({ projects: [{ name: 'foo', config: { }, context: { config, callbacks: [ callback ] } }] });
   });
 });
