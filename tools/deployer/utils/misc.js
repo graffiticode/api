@@ -93,6 +93,22 @@ export async function rmdirRecursive(dirpath) {
   await fsPromise.rmdir(dirpath);
 }
 
+export function buildMakeSettablePromise({}) {
+  return function makeSettablePromise({}) {
+    let resolve;
+    let reject;
+    const promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return {
+      resolve,
+      reject,
+      promise,
+    };
+  };
+}
+
 export {
   fsPromise,
 };

@@ -16,8 +16,11 @@ describe('project', () => {
     expect(installProject).toHaveBeenCalledWith(project);
     expect(buildProject).toHaveBeenCalledWith(project);
     expect(deployProject).toHaveBeenCalledWith(project);
+    expect(project).toHaveProperty('context.installPromise');
+    expect(project).toHaveProperty('context.buildPromise');
+    expect(project).toHaveProperty('context.deployPromise');
   });
-  it('should reject if installProject rejects', async () => {
+  it('should return err true if installProject rejects', async () => {
     // Arrange
     const installProject = jest.fn().mockRejectedValue(new Error('foo'));
     const buildProject = jest.fn().mockResolvedValue();
@@ -29,8 +32,11 @@ describe('project', () => {
     await expect(runProject(project)).resolves.toStrictEqual({ err: true });
 
     // Assert
+    expect(installProject).toHaveBeenCalledWith(project);
+    expect(buildProject).toHaveBeenCalledTimes(0);
+    expect(deployProject).toHaveBeenCalledTimes(0);
   });
-  it('should reject if buildProject rejects', async () => {
+  it('should return err true if buildProject rejects', async () => {
     // Arrange
     const installProject = jest.fn().mockResolvedValue();
     const buildProject = jest.fn().mockRejectedValue(new Error('foo'));
@@ -43,8 +49,10 @@ describe('project', () => {
 
     // Assert
     expect(installProject).toHaveBeenCalledWith(project);
+    expect(buildProject).toHaveBeenCalledWith(project);
+    expect(deployProject).toHaveBeenCalledTimes(0);
   });
-  it('should reject if deployProject rejects', async () => {
+  it('should return err true if deployProject rejects', async () => {
     // Arrange
     const installProject = jest.fn().mockResolvedValue();
     const buildProject = jest.fn().mockResolvedValue();
@@ -58,5 +66,6 @@ describe('project', () => {
     // Assert
     expect(installProject).toHaveBeenCalledWith(project);
     expect(buildProject).toHaveBeenCalledWith(project);
+    expect(deployProject).toHaveBeenCalledWith(project);
   });
 });

@@ -26,24 +26,28 @@ function buildRetryingCreateFunction({ maxAttempts, delay }) {
   };
 }
 
-export default function buildUpdateCode({ getLambda, getRole, readFile, delay }) {
+export default function buildUpdateCode({ getLambda, getRole, updateConfiguration, readFile, delay }) {
   const retryingCreateFunction = buildRetryingCreateFunction({ maxAttempts: 5, delay })
   return async function updateCode({ name, config, context }) {
     const lambda = getLambda({ context });
     const FunctionName = `graffiticode-lambda-${name}`;
+    const RoleName = `${FunctionName}-role`;
+    const functionRole = await getRole({
+      context,
+      RoleName,
+      AssumeRolePolicyDocument: functionAssumeRolePolicyDocument,
+      PolicyArn: functionPolicyArn,
+    });
+    const Handler = config.deploy.handler;
+    const Role = functionRole.Arn;
     const ZipFile = await readFile(context.zipfilePath);
     try {
       await lambda.updateFunctionCode({ FunctionName, ZipFile }).promise();
+      await updateConfiguration({ FunctionName, Handler, Role });
     } catch (err) {
       if (err.code !== 'ResourceNotFoundException') {
         throw err;
       }
-      const functionRole = await getRole({
-        context,
-        RoleName: `${FunctionName}-role`,
-        AssumeRolePolicyDocument: functionAssumeRolePolicyDocument,
-        PolicyArn: functionPolicyArn,
-      });
       await retryingCreateFunction({
         lambda,
         params: {
@@ -51,8 +55,8 @@ export default function buildUpdateCode({ getLambda, getRole, readFile, delay })
           Code: {
             ZipFile,
           },
-          Handler: config.deploy.handler,
-          Role: functionRole.Arn,
+          Handler,
+          Role,
           Runtime: 'nodejs12.x',
         }
       });
