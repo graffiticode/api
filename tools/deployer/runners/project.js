@@ -25,7 +25,13 @@ export function buildRunProject({ installProject, buildProject, deployProject })
 
       return { err: false };
     } catch (err) {
+      console.log(err.stack);
       console.log(`Failed to run project ${name}: ${err.message}`);
+      console.log();
+      console.log();
+      console.log(err);
+      console.log();
+      console.log();
       return { err: true };
     }
   };

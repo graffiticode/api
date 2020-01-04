@@ -18,9 +18,11 @@ function buildRetryingCreateFunction({ maxAttempts, delay }) {
       return await lambda.createFunction(params).promise();
     } catch (err) {
       if (err.code === 'InvalidParameterValueException' && attempt < maxAttempts) {
-        await delay(err.retryDelay);
+        await delay(err.retryDelay * 1000);
         return await retryingCreateFunction({ lambda, params, attempt: attempt + 1 });
       }
+      err.attempt = attempt;
+      err.maxAttempts = maxAttempts;
       throw err;
     }
   };
@@ -32,6 +34,9 @@ export default function buildUpdateCode({ getLambda, getRole, updateConfiguratio
     const lambda = getLambda({ context });
     const FunctionName = `graffiticode-lambda-${name}`;
     const RoleName = `${FunctionName}-role`;
+    const Tags = {
+      'graffiticode': '',
+    };
     const functionRole = await getRole({
       context,
       RoleName,
@@ -43,7 +48,7 @@ export default function buildUpdateCode({ getLambda, getRole, updateConfiguratio
     const ZipFile = await readFile(context.zipfilePath);
     try {
       await lambda.updateFunctionCode({ FunctionName, ZipFile }).promise();
-      await updateConfiguration({ FunctionName, Handler, Role });
+      await lambda.updateFunctionConfiguration({ FunctionName, Handler, Role }).promise();
     } catch (err) {
       if (err.code !== 'ResourceNotFoundException') {
         throw err;
@@ -58,6 +63,7 @@ export default function buildUpdateCode({ getLambda, getRole, updateConfiguratio
           Handler,
           Role,
           Runtime: 'nodejs12.x',
+          Tags,
         }
       });
     }

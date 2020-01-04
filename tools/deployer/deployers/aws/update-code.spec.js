@@ -13,11 +13,11 @@ describe('aws', () => {
         createFunction: createAwsFunction(func),
         getFunction: createAwsFunction(func),
         updateFunctionCode: createAwsFunction(func),
+        updateFunctionConfiguration: createAwsFunction(func),
       };
       const getLambda = jest.fn().mockReturnValue(lambda);
       const role = {};
       const getRole = createAwsFunction(role);
-      const updateConfiguration = jest.fn().mockResolvedValue();
       const readFile = jest.fn().mockResolvedValue();
       const delay = jest.fn().mockResolvedValue();
       const project = {
@@ -34,7 +34,7 @@ describe('aws', () => {
           zipfilePath: '/tmp/build/function.zip',
         },
       };
-      const updateCode = buildUpdateCode({ getLambda, getRole, updateConfiguration, readFile, delay });
+      const updateCode = buildUpdateCode({ getLambda, getRole, readFile, delay });
 
       // Act
       await expect(updateCode(project)).resolves.toBe();

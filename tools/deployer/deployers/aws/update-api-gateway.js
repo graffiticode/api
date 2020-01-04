@@ -33,8 +33,25 @@ export default function buildUpdateApiGateway({ getApiGatewayV2, getRole }) {
         ProtocolType: 'HTTP',
         Target,
         CredentialsArn: Role.Arn,
+        Tags: {
+          'graffiticode': '',
+        },
       }).promise();
     }
     context.api = api;
+
+    const { ApiId } = api;
+    const stages = await apiGatewayV2.getStages({ ApiId }).promise();
+    const stage = stages.Items.find((stage) => stage.ApiGatewayManaged);
+    if (stage) {
+      const { StageName } = stage;
+      await apiGatewayV2.updateStage({
+        ApiId,
+        StageName,
+        DefaultRouteSettings: {
+          DetailedMetricsEnabled: true,
+        },
+      }).promise();
+    }
   };
 }

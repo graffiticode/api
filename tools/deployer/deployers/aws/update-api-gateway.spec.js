@@ -13,6 +13,8 @@ describe('aws', () => {
       const apiGatewayV2 = {
         createApi: createAwsFunction(api),
         getApis: createAwsFunction(apis),
+        getStages: createAwsFunction({ Items: [] }),
+        updateStage: createAwsFunction(),
       };
       const getApiGatewayV2 = jest.fn().mockReturnValue(apiGatewayV2);
       const role = {};

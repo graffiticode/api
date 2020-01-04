@@ -1,23 +1,31 @@
+import { URL } from 'url';
 import { IAM, Lambda, ApiGatewayV2 } from 'aws-sdk';
 import { displayTextWithSpinner, delay, fsPromise, zip } from './../../utils';
 
 import { buildGetIAM, buildGetLambda, buildGetApiGatewayV2 } from './aws';
 import buildGetRole from './get-role';
-import buildUpdateConfiguration from './update-configuration';
 import buildUpdateCode from './update-code';
 import buildUpdateApiGateway from './update-api-gateway';
-import buildLambdaDeployer from './lambda-deployer';
+import { buildMakeUpdateApiConfigurationCallback, buildLambdaDeployer } from './lambda-deployer';
 
-const { readFile } = fsPromise;
+const { readFile, unlink, writeFile } = fsPromise;
+const parseURL = (input) => new URL(input);
 
 const getIAM = buildGetIAM({ IAM });
 const getLambda = buildGetLambda({ Lambda });
 const getApiGatewayV2 = buildGetApiGatewayV2({ ApiGatewayV2 });
 const getRole = buildGetRole({ getIAM });
-const updateConfiguration = buildUpdateConfiguration({ getLambda });
-const updateCode = buildUpdateCode({ getLambda, getRole, updateConfiguration, readFile, delay });
+const updateCode = buildUpdateCode({ getLambda, getRole, readFile, delay });
 const updateApiGateway = buildUpdateApiGateway({ getApiGatewayV2, getRole });
-const lambdaDeployer = buildLambdaDeployer({ displayTextWithSpinner, zip, updateCode, updateApiGateway });
+const makeUpdateApiConfigurationCallback = buildMakeUpdateApiConfigurationCallback({
+  getLambda,
+  parseURL,
+  readFile,
+  unlink,
+  writeFile,
+  zip,
+});
+const lambdaDeployer = buildLambdaDeployer({ displayTextWithSpinner, zip, updateCode, updateApiGateway, makeUpdateApiConfigurationCallback });
 
 export {
   lambdaDeployer,
