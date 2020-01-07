@@ -1,19 +1,20 @@
-import path from 'path';
 import { Clone } from 'nodegit';
-import { mkdtemp, displayTextWithSpinner } from '../utils';
+import { tmpdir } from 'os';
+import { isAbsolute, join, resolve } from 'path';
+import { fsPromise, displayTextWithSpinner } from '../utils';
 
-import buildGitGetter from './git';
-import buildLocalGetter from './local';
-import buildGetCompiler from './install';
+import buildGitInstaller from './git';
+import buildLocalInstaller from './local';
+import buildInstallProject from './install';
 
-const gitGetter = buildGitGetter({ mkdtemp, Clone, displayTextWithSpinner });
-const localGetter = buildLocalGetter({ path, displayTextWithSpinner });
-const getCompiler = buildGetCompiler({ gitGetter, localGetter });
+const gitInstaller = buildGitInstaller({ Clone, displayTextWithSpinner, join, mkdtemp: fsPromise.mkdtemp, tmpdir });
+const localInstaller = buildLocalInstaller({ isAbsolute, resolve, displayTextWithSpinner });
+const installProject = buildInstallProject({ gitInstaller, localInstaller });
 
-export default getCompiler;
+export default installProject;
 
 export {
-  getCompiler,
-  gitGetter,
-  localGetter,
+  installProject,
+  gitInstaller,
+  localInstaller,
 };

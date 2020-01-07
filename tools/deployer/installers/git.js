@@ -1,12 +1,15 @@
-export default function buildGitGetter({ mkdtemp, Clone, displayTextWithSpinner }) {
-  return async function gitCompiler({ repository, context }) {
-    const { cancel } = displayTextWithSpinner({ text: `Install compiler with git...` });
+export default function buildGitInstaller({ Clone, displayTextWithSpinner, join, mkdtemp, tmpdir }) {
+  return async function gitInstaller({ name, config, context }) {
+    const { cancel } = displayTextWithSpinner({ text: `Install ${name} with git...` });
     try {
-      const localPath = await mkdtemp({ prefix: `graffiticode-get` });
-      context.getPath = localPath;
+      context.installPath = await mkdtemp(join(tmpdir(), `graffiticode-install-`));
 
-      const { url, branch } = repository;
-      await Clone.clone(url, localPath, { checkoutBranch: branch });
+      const { url, branch } = config.install;
+      if (!url) {
+        throw new Error('git install config must contain the url property');
+      }
+
+      await Clone.clone(url, context.installPath, { checkoutBranch: branch });
 
       cancel('done');
     } catch (err) {

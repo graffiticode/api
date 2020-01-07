@@ -1,16 +1,23 @@
-import getCompiler from '../installers';
-import buildCompiler from './../builders';
-import deployCompiler from './../deployers';
+import parseArgs from 'minimist';
 
-import buildHandleCompiler from './compiler';
-import buildHandleCompilers from './compilers';
+import installProject from '../installers';
+import buildProject from './../builders';
+import deployProject from './../deployers';
+import { fsPromise } from './../utils';
 
-const handleCompiler = buildHandleCompiler({ getCompiler, buildCompiler, deployCompiler });
-const handleCompilers = buildHandleCompilers({ handleCompiler });
+import buildMakeConfig from './config';
+import { buildRunProject, buildPostRunProject } from './project';
+import buildRunProjects from './projects';
 
-export default handleCompilers;
+const parseArgsOptions = { string: ['config'], alias: { config: ['c'] } };
+const flags = parseArgs(process.argv.slice(2), parseArgsOptions);
+
+const makeConfig = buildMakeConfig({ fsPromise, flags });
+const runProject = buildRunProject({ installProject, buildProject, deployProject });
+const runProjects = buildRunProjects({ runProject, buildPostRunProject });
 
 export {
-  handleCompiler,
-  handleCompilers,
+  makeConfig,
+  runProject,
+  runProjects,
 };

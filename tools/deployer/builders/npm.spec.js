@@ -1,5 +1,4 @@
 describe('npm', () => {
   it('noop', () => {
-
   });
 });
