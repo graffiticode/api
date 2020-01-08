@@ -4,13 +4,13 @@ export function buildMakeUpdateApiConfigurationCallback({ parseURL, writeFile, u
     return async function updateApiConfigurationCallback({ projects }) {
       const apiConfig = projects
         .filter(p => !p.config.type || p.config.type === 'compiler')
-        .reduce((config, project)  => {
+        .reduce((config, project) => {
           const { name, context } = project;
           const url = parseURL(context.url);
           config.hosts[name] = url.host;
           if (Number.isNaN(Number.parseInt(url.port))) {
             if (url.protocol === 'http:') {
-              config.ports[name] = '80';  
+              config.ports[name] = '80';
             } else {
               config.ports[name] = '443';
             }
@@ -24,26 +24,26 @@ export function buildMakeUpdateApiConfigurationCallback({ parseURL, writeFile, u
           protocol: 'https',
           unused: true
         });
-        await writeFile(`${context.buildPath}/build/configs/lambda-config.json`, JSON.stringify(apiConfig));
-        
-        // Remove previous zipfile
-        await unlink(context.zipfilePath);
+      await writeFile(`${context.buildPath}/build/configs/lambda-config.json`, JSON.stringify(apiConfig));
 
-        // (Re-)Zip the build directory
-        await zip({ name, config, context });
+      // Remove previous zipfile
+      await unlink(context.zipfilePath);
 
-        // Update function code
-        const { FunctionName } = context.lambda.Configuration;
-        const ZipFile = await readFile(context.zipfilePath);
-        await lambda.updateFunctionCode({ FunctionName, ZipFile }).promise();
+      // (Re-)Zip the build directory
+      await zip({ name, config, context });
 
-        // Update function configuration
-        const Environment = {
-          Variables: {
-            CONFIG: './../configs/lambda-config.json'
-          }
-        };
-        await lambda.updateFunctionConfiguration({ FunctionName, Environment }).promise();
+      // Update function code
+      const { FunctionName } = context.lambda.Configuration;
+      const ZipFile = await readFile(context.zipfilePath);
+      await lambda.updateFunctionCode({ FunctionName, ZipFile }).promise();
+
+      // Update function configuration
+      const Environment = {
+        Variables: {
+          CONFIG: './../configs/lambda-config.json'
+        }
+      };
+      await lambda.updateFunctionConfiguration({ FunctionName, Environment }).promise();
     };
   };
 }

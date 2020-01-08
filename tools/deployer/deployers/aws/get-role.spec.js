@@ -19,7 +19,7 @@ describe('aws', () => {
       const PolicyArn = 'PolicyArn';
       const AssumeRolePolicyDocument = 'AssumeRolePolicyDocument';
       const getRole = buildGetRole({ getIAM });
-      
+
       // Act
       await expect(getRole({ RoleName, PolicyArn, AssumeRolePolicyDocument })).resolves.toBe();
 

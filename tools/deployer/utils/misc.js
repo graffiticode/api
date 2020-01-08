@@ -22,7 +22,7 @@ export function buildPrintLines({ lines, logUpdate }) {
       logUpdate.clear();
       return;
     }
-    const text = lines.reduce((prev, {text, spinner, frameIndex}, index) => {
+    const text = lines.reduce((prev, { text, spinner, frameIndex }, index) => {
       if (index !== 0) {
         prev += '\n';
       }
@@ -58,7 +58,7 @@ function buildUpdateFrame({ info, printLines }) {
 }
 
 export function buildDisplayTextWithSpinner({ lines, printLines, logUpdate }) {
-  return function displayTextWithSpinner({ text, spinner = dots}) {
+  return function displayTextWithSpinner({ text, spinner = dots }) {
     const info = {
       text,
       spinner,
@@ -67,7 +67,7 @@ export function buildDisplayTextWithSpinner({ lines, printLines, logUpdate }) {
     lines.push(info);
     const updateFrame = buildUpdateFrame({ info, printLines });
     info.updateFrameInterval = setInterval(updateFrame, spinner.interval)
-    
+
     const cancel = buildCancel({ info, lines, printLines, logUpdate });
     const updateText = buildUpdateText({ info, printLines });
     return {
@@ -93,8 +93,8 @@ export async function rmdirRecursive(dirpath) {
   await fsPromise.rmdir(dirpath);
 }
 
-export function buildMakeSettablePromise({}) {
-  return function makeSettablePromise({}) {
+export function buildMakeSettablePromise({ }) {
+  return function makeSettablePromise({ }) {
     let resolve;
     let reject;
     const promise = new Promise((res, rej) => {

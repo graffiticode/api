@@ -1,4 +1,4 @@
-import {isAbsolute, resolve} from 'path';
+import { isAbsolute, resolve } from 'path';
 import buildLocalInstaller from './local';
 
 describe('local', () => {
