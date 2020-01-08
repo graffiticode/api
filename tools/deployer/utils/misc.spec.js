@@ -1,4 +1,12 @@
-import { displayTextWithSpinner, delay } from './index';
+import { delay } from './index';
+import { buildDisplayTextWithSpinner } from './misc';
+
+const displayTextWithSpinner = buildDisplayTextWithSpinner({
+  lines: [],
+  log: jest.fn(),
+  logUpdate: { clear: jest.fn() },
+  printLines: jest.fn()
+});
 
 const DURATION_MIN = 10;
 const DURATION_MAX = 50;

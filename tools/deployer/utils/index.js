@@ -15,7 +15,7 @@ import buildZip from './zip';
 
 const lines = [];
 const printLines = buildPrintLines({ lines, logUpdate });
-const displayTextWithSpinner = buildDisplayTextWithSpinner({ lines, printLines, logUpdate });
+const displayTextWithSpinner = buildDisplayTextWithSpinner({ log: console.log, lines, printLines, logUpdate });
 const makeSettablePromise = buildMakeSettablePromise({});
 const exec = promisify(childProcess.exec);
 const zip = buildZip({ exec, path });

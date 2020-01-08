@@ -3,7 +3,7 @@ async function waitToCall({ pre = Promise.resolve(), fn, param }) {
   await fn(param);
 }
 
-export function buildRunProject({ installProject, buildProject, deployProject }) {
+export function buildRunProject({ log, installProject, buildProject, deployProject }) {
   return async function runProject({ name, config, context }) {
     try {
       context.installPromise = waitToCall({
@@ -25,20 +25,9 @@ export function buildRunProject({ installProject, buildProject, deployProject })
 
       return { err: false };
     } catch (err) {
-      console.log(err.stack);
-      console.log(`Failed to run project ${name}: ${err.message}`);
-      console.log();
-      console.log();
-      console.log(err);
-      console.log();
-      console.log();
+      log(err.stack);
+      log(`Failed to run project ${name}: ${err.message}`);
       return { err: true };
     }
-  };
-}
-
-export function buildPostRunProject({ }) {
-  return async function postRunProject({ projects }) {
-
   };
 }

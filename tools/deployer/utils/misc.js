@@ -31,7 +31,7 @@ export function buildPrintLines({ lines, logUpdate }) {
     logUpdate(text);
   };
 }
-function buildCancel({ info, lines, printLines, logUpdate }) {
+function buildCancel({ log, info, lines, printLines, logUpdate }) {
   return function cancel(suffix) {
     const index = lines.indexOf(info);
     if (index < 0) {
@@ -40,7 +40,7 @@ function buildCancel({ info, lines, printLines, logUpdate }) {
     lines.splice(index, 1);
     clearInterval(info.updateFrameInterval);
     logUpdate.clear();
-    console.log(`${info.text} ${suffix}`);
+    log(`${info.text} ${suffix}`);
     printLines();
   };
 }
@@ -57,7 +57,7 @@ function buildUpdateFrame({ info, printLines }) {
   };
 }
 
-export function buildDisplayTextWithSpinner({ lines, printLines, logUpdate }) {
+export function buildDisplayTextWithSpinner({ log, lines, printLines, logUpdate }) {
   return function displayTextWithSpinner({ text, spinner = dots }) {
     const info = {
       text,
@@ -68,7 +68,7 @@ export function buildDisplayTextWithSpinner({ lines, printLines, logUpdate }) {
     const updateFrame = buildUpdateFrame({ info, printLines });
     info.updateFrameInterval = setInterval(updateFrame, spinner.interval)
 
-    const cancel = buildCancel({ info, lines, printLines, logUpdate });
+    const cancel = buildCancel({ log, info, lines, printLines, logUpdate });
     const updateText = buildUpdateText({ info, printLines });
     return {
       cancel,
