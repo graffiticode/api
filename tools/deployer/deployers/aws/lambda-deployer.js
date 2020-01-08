@@ -1,49 +1,63 @@
-export function buildMakeUpdateApiConfigurationCallback({ parseURL, writeFile, unlink, zip, readFile, getLambda }) {
+export function buildMakeUpdateApiConfigurationCallback({ displayTextWithSpinner, parseURL, writeFile, unlink, zip, readFile, getLambda }) {
   return function makeUpdateApiConfigurationCallback({ name, config, context }) {
     const lambda = getLambda({ context });
     return async function updateApiConfigurationCallback({ projects }) {
-      const apiConfig = projects
-        .filter(p => !p.config.type || p.config.type === 'compiler')
-        .reduce((config, project) => {
-          const { name, context } = project;
-          const url = parseURL(context.url);
-          config.hosts[name] = url.host;
-          if (Number.isNaN(Number.parseInt(url.port))) {
-            if (url.protocol === 'http:') {
-              config.ports[name] = '80';
+      const { cancel, updateText } = displayTextWithSpinner({ text: `Update ${name} configuration...` });
+
+      try {
+        updateText(`Update ${name} configuration[Write Configuration]...`);
+        const apiConfig = projects
+          .filter(p => !p.config.type || p.config.type === 'compiler')
+          .reduce((config, project) => {
+            const { name, context } = project;
+            const url = parseURL(context.url);
+            config.hosts[name] = url.host;
+            if (Number.isNaN(Number.parseInt(url.port))) {
+              if (url.protocol === 'http:') {
+                config.ports[name] = '80';
+              } else {
+                config.ports[name] = '443';
+              }
             } else {
-              config.ports[name] = '443';
+              config.ports[name] = url.port;
             }
-          } else {
-            config.ports[name] = url.port;
+            return config;
+          }, {
+            hosts: {},
+            ports: {},
+            protocol: 'https',
+            unused: true
+          });
+        await writeFile(`${context.buildPath}/build/configs/lambda-config.json`, JSON.stringify(apiConfig));
+
+        // Remove previous zipfile
+        updateText(`Update ${name} configuration[zip]...`);
+        await unlink(context.zipfilePath);
+
+        // (Re-)Zip the build directory
+        await zip({ name, config, context });
+
+        // Update function code
+        updateText(`Update ${name} configuration[Update Function Code]...`);
+        const { FunctionName } = context.lambda.Configuration;
+        const ZipFile = await readFile(context.zipfilePath);
+        await lambda.updateFunctionCode({ FunctionName, ZipFile }).promise();
+
+        // Update function configuration
+        updateText(`Update ${name} configuration[Update Function Configuration]...`);
+        const Environment = {
+          Variables: {
+            CONFIG: './../configs/lambda-config.json'
           }
-          return config;
-        }, {
-          hosts: {},
-          ports: {},
-          protocol: 'https',
-          unused: true
-        });
-      await writeFile(`${context.buildPath}/build/configs/lambda-config.json`, JSON.stringify(apiConfig));
+        };
+        await lambda.updateFunctionConfiguration({ FunctionName, Environment }).promise();
 
-      // Remove previous zipfile
-      await unlink(context.zipfilePath);
-
-      // (Re-)Zip the build directory
-      await zip({ name, config, context });
-
-      // Update function code
-      const { FunctionName } = context.lambda.Configuration;
-      const ZipFile = await readFile(context.zipfilePath);
-      await lambda.updateFunctionCode({ FunctionName, ZipFile }).promise();
-
-      // Update function configuration
-      const Environment = {
-        Variables: {
-          CONFIG: './../configs/lambda-config.json'
-        }
-      };
-      await lambda.updateFunctionConfiguration({ FunctionName, Environment }).promise();
+        updateText(`Update ${name} configuration...`);
+        cancel('done');
+      } catch (err) {
+        cancel('failed');
+        throw err;
+      }
     };
   };
 }

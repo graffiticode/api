@@ -18,6 +18,7 @@ const getRole = buildGetRole({ getIAM });
 const updateCode = buildUpdateCode({ getLambda, getRole, readFile, delay });
 const updateApiGateway = buildUpdateApiGateway({ getApiGatewayV2, getRole });
 const makeUpdateApiConfigurationCallback = buildMakeUpdateApiConfigurationCallback({
+  displayTextWithSpinner,
   getLambda,
   parseURL,
   readFile,
@@ -25,7 +26,13 @@ const makeUpdateApiConfigurationCallback = buildMakeUpdateApiConfigurationCallba
   writeFile,
   zip,
 });
-const lambdaDeployer = buildLambdaDeployer({ displayTextWithSpinner, zip, updateCode, updateApiGateway, makeUpdateApiConfigurationCallback });
+const lambdaDeployer = buildLambdaDeployer({
+  displayTextWithSpinner,
+  zip,
+  updateCode,
+  updateApiGateway,
+  makeUpdateApiConfigurationCallback,
+});
 
 export {
   lambdaDeployer,

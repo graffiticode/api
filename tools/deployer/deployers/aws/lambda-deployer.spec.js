@@ -110,6 +110,9 @@ describe('aws', () => {
   describe('makeUpdateApiConfigurationCallback', () => {
     it('smoke', async () => {
       // Arrange
+      const cancel = jest.fn().mockReturnValue();
+      const updateText = jest.fn().mockReturnValue();
+      const displayTextWithSpinner = jest.fn().mockReturnValue({ cancel, updateText });
       const apiProject = {
         name: 'api',
         config: {
@@ -136,6 +139,7 @@ describe('aws', () => {
       };
       const getLambda = jest.fn().mockReturnValue(lambda);
       const makeUpdateApiConfigurationCallback = buildMakeUpdateApiConfigurationCallback({
+        displayTextWithSpinner,
         parseURL,
         writeFile,
         unlink,
@@ -165,6 +169,9 @@ describe('aws', () => {
     });
     it('should use port if exists', async () => {
       // Arrange
+      const cancel = jest.fn().mockReturnValue();
+      const updateText = jest.fn().mockReturnValue();
+      const displayTextWithSpinner = jest.fn().mockReturnValue({ cancel, updateText });
       const apiProject = {
         name: 'api',
         config: {
@@ -191,6 +198,7 @@ describe('aws', () => {
       };
       const getLambda = jest.fn().mockReturnValue(lambda);
       const makeUpdateApiConfigurationCallback = buildMakeUpdateApiConfigurationCallback({
+        displayTextWithSpinner,
         parseURL,
         writeFile,
         unlink,
@@ -220,6 +228,9 @@ describe('aws', () => {
     });
     it('should set port to 80 if protocol is http', async () => {
       // Arrange
+      const cancel = jest.fn().mockReturnValue();
+      const updateText = jest.fn().mockReturnValue();
+      const displayTextWithSpinner = jest.fn().mockReturnValue({ cancel, updateText });
       const apiProject = {
         name: 'api',
         config: {
@@ -246,6 +257,7 @@ describe('aws', () => {
       };
       const getLambda = jest.fn().mockReturnValue(lambda);
       const makeUpdateApiConfigurationCallback = buildMakeUpdateApiConfigurationCallback({
+        displayTextWithSpinner,
         parseURL,
         writeFile,
         unlink,
