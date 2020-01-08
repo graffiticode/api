@@ -28,7 +28,7 @@ docker-compose up -d
 ```
 
 ## Use `deployer`
-`deployer` is a script that installs, builds, and deploys graffiticode applications.
+`deployer` is an application that installs, builds, and deploys graffiticode projects. The deployer uses a config/manifest to determine how to install, build, and deploy projects ([example](configs/deployer-config.json)).
 
 __TODO__ _More description and documentation needed_
 
@@ -41,6 +41,7 @@ npm run build
 ```bash
 npm run deployer
 ```
+This uses a sample [configuration](configs/deployer-config.json) that deploy the [L0](https://github.com/graffiticode/l0), [L1](https://github.com/graffiticode/l1), and [api](https://github.com/graffiticode/api) projects to AWS Lambda functions.
 
 ## AWS Lambda
 Steps to deploy `graffiticode/api` on AWS Lambda. To
