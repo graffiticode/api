@@ -16,10 +16,12 @@
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "hashids": "1.1.1",
-    "method-override": "latest",
-    "morgan": "latest",
+    "method-override": "^3.0.0",
+    "morgan": "^1.9.1",
+    "node-fetch": "^2.6.0",
     "pg": "6.1.6",
-    "redis": "2.6.3"
+    "redis": "2.6.3",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@types/node": "^12.0.2",
