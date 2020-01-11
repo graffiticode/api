@@ -49,6 +49,7 @@ app.use('/', routes.root());
 app.use('/compile', routes.compile());
 app.use('/lang', routes.lang());
 app.use('/L*', routes.lang());
+app.use('/config', routes.configHandler);
 
 process.on('uncaughtException', (err) => {
   console.log(`ERROR Caught exception: ${err.stack}`);
