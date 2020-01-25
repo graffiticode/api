@@ -1,7 +1,7 @@
 default: build
 	npm start
 
-test: build
+test:
 	npm run test
 
 build:
