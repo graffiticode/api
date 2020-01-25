@@ -31,18 +31,23 @@ app.all('*', (req, res, next) => {
   }
 });
 
-app.use(morgan('combined', {
-  skip: (req, res) => res.statusCode < 400,
-}));
+if (env === 'development') {
+  app.use(morgan('dev'));
+  app.use(errorHandler({ dumpExceptions: true, showStack: true }));
+} else {
+  app.use(morgan('combined', {
+    skip: (req, res) => res.statusCode < 400,
+  }));
+}
 app.use(express.json({ limit: '50mb' }));
 app.use(methodOverride());
+app.use(routes.proxyHandler);
 
-if (process.env.NODE_ENV === 'development') {
-  app.use(errorHandler({ dumpExceptions: true, showStack: true }))
-} else if (process.env.NODE_ENV === 'production') {
-  app.use(errorHandler())
-}
-app.use((err, req, res, next) => res.sendStatus(500));
+// Error handling
+app.use((err, req, res, next) => {
+  console.log(err.stack);
+  res.sendStatus(500);
+});
 
 // Routes
 app.use('/', routes.root());
