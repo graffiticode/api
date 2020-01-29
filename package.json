@@ -41,7 +41,7 @@
   },
   "scripts": {
     "start": "node build/src/app.js",
-    "build": "tsc",
+    "build": "tsc; cp configs/* build/configs",
     "pretest": "npm run build",
     "test": "jest build/",
     "dev": "nodemon --exec \"npm test && npm start\" --ignore \"build\"",
