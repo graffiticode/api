@@ -1,0 +1,10 @@
+{
+  "hosts": {
+    "L0": "s.0.acx.ac"
+    "L122": "s.122.acx.ac"
+  },
+  "ports": {
+    "L0": "443"
+  },
+  "protocol": "https"
+}

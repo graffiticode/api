@@ -34,7 +34,7 @@ describe('config', () => {
   it('should read configuration from flag', async () => {
     // Arrange
     const configFilepath = join(configDir, 'flag-config.json');
-    await fsPromise.writeFile(configFilepath, JSON.stringify({ projects: { foo: {} } }))
+    await fsPromise.writeFile(configFilepath, JSON.stringify({ projects: { foo: {} } }));
 
     const flags = { config: configFilepath };
     const makeConfig = buildMakeConfig({ fsPromise, flags });
