@@ -11,7 +11,7 @@ const assert = (function assert() {
         let err = new Error(str);
         throw err;
       }
-    }
+    };
 })();
 
 function error(val, err) {

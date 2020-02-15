@@ -31,7 +31,8 @@ module.exports = () => {
       let val = await compile(auth, item);
       let refresh = item.options && item.options.refresh;
       console.log("POST " + "/compile L" + item.lang + " in " + (new Date - t0) + "ms " + (refresh && "[refresh]" || ""));
-      res.status(200).json(val);
+      const statusCode = val.error && 400 || 200;
+      res.status(statusCode).json(val);
     } catch(err) {
       res.status(500).json(err.message);
     }
