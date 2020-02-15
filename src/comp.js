@@ -119,11 +119,22 @@ function comp(auth, lang, code, data, options, resume) {
           data += chunk;
         });
         res.on('end', function () {
-          resume(null, parseJSON(data));
+          let err;
+          if (res.statusCode !== 200) {
+            err = [{
+              statusCode: res.statusCode,
+              data: data,
+            }];
+          }
+          const val = parseJSON(data);
+          resume(err, val);
         });
         res.on('error', function (err) {
           console.log("[1] comp() ERROR " + err);
-          resume(408);
+          resume([{
+            statusCode: 500,
+            data: data,
+          }]);
         });
       });
       req.write(encodedData);
