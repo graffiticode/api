@@ -125,6 +125,17 @@ function num2dot(num) {
   return d;
 }
 
+function statusCodeFromErrors(errs) {
+  let statusCode;
+  return errs.some(err => statusCode = err.statusCode) && statusCode || 500;
+}
+
+function messageFromErrors(errs) {
+  let message;
+  return errs.some(err => message = err.data && err.data.error) && message || "Internal error";
+}
+
+
 exports.getCompilerHost = getCompilerHost;
 exports.getCompilerPort = getCompilerPort;
 exports.isNonEmptyString = isNonEmptyString;
@@ -134,3 +145,5 @@ exports.cleanAndTrimSrc = cleanAndTrimSrc;
 exports.dot2num = dot2num;
 exports.num2dot = num2dot;
 exports.error = error;
+exports.statusCodeFromErrors = statusCodeFromErrors;
+exports.messageFromErrors = messageFromErrors;

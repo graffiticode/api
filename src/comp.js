@@ -119,15 +119,14 @@ function comp(auth, lang, code, data, options, resume) {
           data += chunk;
         });
         res.on('end', function () {
-          let err;
+          data = parseJSON(data);
+          let err = null;
           if (res.statusCode !== 200) {
-            err = [{
-              statusCode: res.statusCode,
-              data: data,
-            }];
+            // If not 200, then payload should have an error field.
+            assert(data.error);
+            err = data.error;
           }
-          const val = parseJSON(data);
-          resume(err, val);
+          resume(err, data);
         });
         res.on('error', function (err) {
           console.log("[1] comp() ERROR " + err);
@@ -141,10 +140,16 @@ function comp(auth, lang, code, data, options, resume) {
       req.end();
       req.on('error', function(err) {
         console.log("[2] comp() ERROR " + err);
-        resume(408);
+        resume([{
+          statusCode: 500,
+          error: "Service unavailable",
+        }]);
       });
     } else {
-      resume(404);
+      resume([{
+        statusCode: 500,
+        error: "Service unavailable",
+      }]);
     }
   });
 }
@@ -184,9 +189,10 @@ function compile(auth, item) {
     let t0 = new Date;
     compileID(auth, id, options, (err, obj) => {
       if (err) {
+        console.log("compile() err=" + JSON.stringify(err));
         reject(err);
       } else {
-        accept(obj)
+        accept(obj);
       }
     });
   });

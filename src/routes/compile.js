@@ -1,7 +1,7 @@
 const assert = require('assert');
 const {Router} = require('express');
 const {compile} = require('../comp');
-const {error} = require('../util');
+const {error, statusCodeFromErrors, messageFromErrors} = require('../util');
 module.exports = () => {
   const router = new Router();
   router.get('/', async (req, res) => {
@@ -34,7 +34,8 @@ module.exports = () => {
       const statusCode = val.error && 400 || 200;
       res.status(statusCode).json(val);
     } catch(err) {
-      res.status(500).json(err.message);
+      console.log("POST /compile err=" + JSON.stringify(err, null, 2));
+      res.status(statusCodeFromErrors(err)).json(messageFromErrors(err));
     }
   });
   return router;
