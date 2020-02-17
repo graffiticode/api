@@ -34,7 +34,6 @@ module.exports = () => {
       const statusCode = val.error && 400 || 200;
       res.status(statusCode).json(val);
     } catch(err) {
-      console.log("POST /compile err=" + JSON.stringify(err, null, 2));
       res.status(statusCodeFromErrors(err)).json(messageFromErrors(err));
     }
   });

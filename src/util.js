@@ -127,14 +127,28 @@ function num2dot(num) {
 
 function statusCodeFromErrors(errs) {
   let statusCode;
-  return errs.some(err => statusCode = err.statusCode) && statusCode || 500;
+  return errs.some(
+    err => statusCode =
+      err.statusCode
+  ) && statusCode || 500;
 }
 
 function messageFromErrors(errs) {
   let message;
-  return errs.some(err => message = err.data && err.data.error) && message || "Internal error";
+  return errs.some(
+    err => message =
+      err.data && err.data.error ||
+      err.data
+  ) && message || "Internal error";
 }
 
+const INTERNAL_ERROR = {
+  statusCode: 500,
+  error: "Internal error",
+};
+function internalError(error) {
+  return Object.assign(INTERNAL_ERROR, {error});
+}
 
 exports.getCompilerHost = getCompilerHost;
 exports.getCompilerPort = getCompilerPort;
@@ -147,3 +161,4 @@ exports.num2dot = num2dot;
 exports.error = error;
 exports.statusCodeFromErrors = statusCodeFromErrors;
 exports.messageFromErrors = messageFromErrors;
+exports.internalError = internalError;

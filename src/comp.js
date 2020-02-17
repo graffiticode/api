@@ -2,7 +2,12 @@ const assert = require('assert');
 const {decodeID, encodeID, objectToID, objectFromID} = require('./id');
 const {delCache, getCache, setCache} = require('./cache');
 const {pingLang, getCompilerVersion} = require('./lang');
-const {getCompilerHost, getCompilerPort, parseJSON, cleanAndTrimObj, cleanAndTrimSrc} = require('./util');
+const {getCompilerHost,
+       getCompilerPort,
+       parseJSON,
+       cleanAndTrimObj,
+       cleanAndTrimSrc,
+       internalError} = require('./util');
 
 const nilID = encodeID([0,0,0]);
 
@@ -17,7 +22,7 @@ function getCode(ids, resume) {
     })
     .catch(err => {
       console.log("getCode() err=" + err.stack);
-      resume(err);
+      resume([internalError(err)]);
     });
 }
 
@@ -33,9 +38,8 @@ function getData(ids, resume) {
         resume(null, val);
       })
       .catch(err => {
-        console.log("getData() err=" + err);
         console.trace();
-        resume(err);
+        resume([internalError(err)]);
       });
   }
 }
@@ -130,26 +134,17 @@ function comp(auth, lang, code, data, options, resume) {
         });
         res.on('error', function (err) {
           console.log("[1] comp() ERROR " + err);
-          resume([{
-            statusCode: 500,
-            data: data,
-          }]);
+          resume([internalError(data)]);
         });
       });
       req.write(encodedData);
       req.end();
       req.on('error', function(err) {
         console.log("[2] comp() ERROR " + err);
-        resume([{
-          statusCode: 500,
-          error: "Service unavailable",
-        }]);
+        resume([internalError()]);
       });
     } else {
-      resume([{
-        statusCode: 500,
-        error: "Service unavailable",
-      }]);
+      resume([internalError()]);
     }
   });
 }
@@ -189,7 +184,6 @@ function compile(auth, item) {
     let t0 = new Date;
     compileID(auth, id, options, (err, obj) => {
       if (err) {
-        console.log("compile() err=" + JSON.stringify(err));
         reject(err);
       } else {
         accept(obj);
