@@ -53,8 +53,8 @@ app.use((err, req, res, next) => {
 app.use('/', routes.root());
 app.use('/compile', routes.compile());
 app.use('/lang', routes.lang());
-app.use('/L*', routes.lang());
 app.use('/config', routes.configHandler);
+app.use('/L*', routes.lang());
 
 process.on('uncaughtException', (err) => {
   console.log(`ERROR Caught exception: ${err.stack}`);

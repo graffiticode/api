@@ -6,5 +6,7 @@
     "L0": "443"
   },
   "protocol": "https",
-  "unused": true
+  "metadata": {
+    "api": "v0.3.0"
+  }
 }

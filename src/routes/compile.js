@@ -14,6 +14,7 @@ module.exports = () => {
       let t0 = new Date;
       let val = await compile(auth, item);
       console.log("GET /compile in " + (new Date - t0) + "ms");
+      res.set("Access-Control-Allow-Origin", "*");
       res.status(200).json(val);
     } catch(err) {
       res.status(500).json(err.message);
@@ -30,8 +31,8 @@ module.exports = () => {
       let t0 = new Date;
       let val = await compile(auth, item);
       let refresh = item.options && item.options.refresh;
-      console.log("POST " + "/compile L" + item.lang + " in " + (new Date - t0) + "ms " + (refresh && "[refresh]" || ""));
       const statusCode = val.error && 400 || 200;
+      res.set("Access-Control-Allow-Origin", "*");
       res.status(statusCode).json(val);
     } catch(err) {
       res.status(statusCodeFromErrors(err)).json(messageFromErrors(err));

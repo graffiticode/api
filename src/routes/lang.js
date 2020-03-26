@@ -6,8 +6,8 @@ module.exports = () => {
   router.get('/', (req, res) => {
     let [unused, base, path] = req.baseUrl.split("/");
     let id =
-      base === "lang" && req.query.id ||
-      base.indexOf("L") === 0 && base.slice(1);
+        base === "lang" && req.query.id ||
+        base.indexOf('L') === 0 && base.slice(1);
     if (isNaN(parseInt(id))) {
       res.sendStatus(400);
     } else {
@@ -15,6 +15,7 @@ module.exports = () => {
       pingLang(lang, pong => {
         if (pong) {
           if (path === undefined) {
+            res.set("Access-Control-Allow-Origin", "*");
             res.sendStatus(200);
           } else {
             let data = [];
@@ -28,6 +29,7 @@ module.exports = () => {
               res2.on("data", function (chunk) {
                 data.push(chunk);
               }).on("end", function () {
+                res.set("Access-Control-Allow-Origin", "*");
                 res.send(data.join(""));
               });
             });
