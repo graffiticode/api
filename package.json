@@ -29,7 +29,7 @@
     "graceful-fs": "^4.1.15",
     "jest": "^24.9.0",
     "log-update": "^3.3.0",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.5",
     "nodegit": "^0.26.2",
     "nodemon": "^2.0.1",
     "nyc": "^14.1.1",
