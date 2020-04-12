@@ -117,32 +117,39 @@ function comp(auth, lang, code, data, options, resume) {
           'Content-Length': Buffer.byteLength(encodedData),
         },
       };
-      var req = global.protocol.request(reqOptions, function(res) {
-        var data = "";
-        res.on('data', function (chunk) {
-          data += chunk;
-        });
-        res.on('end', function () {
-          data = parseJSON(data);
-          let err = null;
-          if (res.statusCode !== 200) {
-            // If not 200, then payload should have an error field.
-            assert(data.error);
-            err = data.error;
-          }
-          resume(err, data);
-        });
-        res.on('error', function (err) {
-          console.log("[1] comp() ERROR " + err);
-          resume([internalError(data)]);
-        });
+      var req = global.protocol.request(reqOptions, (res) => {
+        const chunks = [];
+        res
+          .on('error', (err) => {
+            console.log("[1] comp() ERROR " + err);
+            resume([internalError()]);
+          })
+          .on('data', (chunk) => chunks.push(chunk))
+          .on('end', () => {
+            const body = chunks.map(c => c.toString()).join('');
+            const data = parseJSON(body);
+            if (res.statusCode !== 200) {
+              let err = null;
+              // If not 200, then payload should have an error field.
+              if (data) {
+                assert(data.error);
+                err = [data.error];
+              } else {
+                assert(body);
+                err = [body];
+              }
+              resume(err);
+            } else {
+              resume(null, data);
+            }
+          });
       });
-      req.write(encodedData);
-      req.end();
-      req.on('error', function(err) {
+      req.on('error', (err) => {
         console.log("[2] comp() ERROR " + err);
         resume([internalError()]);
       });
+      req.write(encodedData);
+      req.end();
     } else {
       resume([internalError()]);
     }
