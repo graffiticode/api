@@ -35,6 +35,7 @@ function clean() {
   console.log("Cleaning...");
   cldir("./pub");
   cldir("./lib");
+  cldir("./build");
 }
 
 function compile() {
@@ -44,13 +45,7 @@ function compile() {
 
 function bundle() {
   console.log("Bundling...");
-  exec('cp configs/* build/configs');
-  const commit = String(exec('git rev-parse HEAD')).trim().slice(0, 7);
-  const build = {
-    'name': 'api',
-    'commit': commit,
-  };
-  fs.writeFile('build/build.json', JSON.stringify(build, null, 2), () => {});
+  exec('cp -r ./configs ./build/configs');
 }
 
 function build() {
@@ -61,4 +56,17 @@ function build() {
   console.log("Build completed in " + (Date.now() - t0) + " ms");
 }
 
-build();
+function prebuild() {
+  const commit = String(exec('git rev-parse HEAD')).trim().slice(0, 7);
+  const build = {
+    'name': 'api',
+    'commit': commit,
+  };
+  fs.writeFile('src/build.json', JSON.stringify(build, null, 2), () => {});
+}
+
+if (process.argv.includes('--prebuild')) {
+  prebuild();
+} else {
+  build();
+}
