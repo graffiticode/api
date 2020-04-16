@@ -42,7 +42,7 @@
   },
   "scripts": {
     "start": "node build/src/app.js",
-    "prebuild": "node tools/build.js --prebuild",
+    "build-dev": "node tools/build.js --build-dev",
     "build": "node tools/build.js",
     "pretest": "npm run build",
     "test": "jest build/",
