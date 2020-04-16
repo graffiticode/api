@@ -5,7 +5,7 @@ test:
 	npm run test
 
 build:
-	npm run prebuild
+	npm run build-dev
 	npm run build
 
 dev:
