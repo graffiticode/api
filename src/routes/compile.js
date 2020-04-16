@@ -2,7 +2,7 @@ const assert = require('assert');
 const {Router} = require('express');
 const {compile} = require('../comp');
 const {error, statusCodeFromErrors, messageFromErrors, setMetadataBuilds} = require('../util');
-const build = require('../build.json');
+const build = require('../../build.json');
 module.exports = () => {
   const router = new Router();
   router.get('/', async (req, res) => {

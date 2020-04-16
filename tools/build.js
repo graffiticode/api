@@ -46,6 +46,7 @@ function compile() {
 function bundle() {
   console.log("Bundling...");
   exec('cp -r ./configs ./build/configs');
+  exec('cp build.json ./build');
 }
 
 function build() {
@@ -62,7 +63,7 @@ function prebuild() {
     'name': 'api',
     'commit': commit,
   };
-  fs.writeFile('src/build.json', JSON.stringify(build, null, 2), () => {});
+  fs.writeFile('build.json', JSON.stringify(build, null, 2), () => {});
 }
 
 if (process.argv.includes('--prebuild')) {
