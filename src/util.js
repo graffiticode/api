@@ -126,6 +126,9 @@ function num2dot(num) {
 }
 
 function statusCodeFromErrors(errs) {
+  if (!Array.isArray(errs)) {
+    errs = [errs];
+  }
   let statusCode;
   return errs.some(
     err => statusCode =
@@ -134,6 +137,9 @@ function statusCodeFromErrors(errs) {
 }
 
 function messageFromErrors(errs) {
+  if (!Array.isArray(errs)) {
+    errs = [errs];
+  }
   let message;
   return errs.some(
     err => message =
