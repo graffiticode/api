@@ -1,6 +1,6 @@
 {
-  "name": "api-graffiticode",
-  "version": "0.0.1",
+  "name": "@graffiticode/api",
+  "version": "0.0.2",
   "description": "Gateway for compilers as a service.",
   "author": "Art Compiler LLC",
   "license": "MIT",
