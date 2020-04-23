@@ -20,6 +20,20 @@ module.exports = () => {
       res.status(500).json(err.message);
     }
   });
+  router.options('/', async (req, res) => {
+    try {
+      console.log("OPTIONS /compile body=" + JSON.stringify(req.body, null, 2));
+      let body = typeof req.body === "string" && JSON.parse(req.body) || req.body;
+      res.set("Access-Control-Allow-Origin", "*");
+      res.set("Access-Control-Request-Methods", "POST");
+      res.set("Access-Control-Allow-Headers", "X-PINGOTHER, Content-Type");
+      res.set("Connection", "Keep-Alive");
+      res.sendStatus(204);
+    } catch(err) {
+      console.log("OPTIONS /compile err=" + err);
+      res.statusStatus(500);
+    }
+  });
   router.post('/', async (req, res) => {
     try {
       let body = typeof req.body === "string" && JSON.parse(req.body) || req.body;
