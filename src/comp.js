@@ -1,12 +1,10 @@
 const assert = require('assert');
 const {decodeID, encodeID, objectToID, objectFromID} = require('./id');
 const {delCache, getCache, setCache} = require('./cache');
-const {pingLang, getCompilerVersion} = require('./lang');
+const {pingLang} = require('./lang');
 const {getCompilerHost,
        getCompilerPort,
        parseJSON,
-       cleanAndTrimObj,
-       cleanAndTrimSrc,
        internalError} = require('./util');
 
 const nilID = encodeID([0,0,0]);
