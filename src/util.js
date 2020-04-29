@@ -52,6 +52,16 @@ function parseJSON(str) {
   }
 }
 
+function setMetadataBuilds(data, build) {
+  if (!data._) {
+    data._ = {};
+  }
+  if (!data._.builds) {
+    data._.builds = [];
+  }
+  data._.builds.push(build);
+}
+
 function getCompilerHost(lang, config) {
   config = config || global.config || {};
   if (config.useLocalCompiles) {
@@ -158,6 +168,7 @@ function internalError(error) {
 
 exports.getCompilerHost = getCompilerHost;
 exports.getCompilerPort = getCompilerPort;
+exports.setMetadataBuilds = setMetadataBuilds;
 exports.isNonEmptyString = isNonEmptyString;
 exports.parseJSON = parseJSON;
 exports.cleanAndTrimObj = cleanAndTrimObj;

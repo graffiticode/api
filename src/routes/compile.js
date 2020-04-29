@@ -1,7 +1,8 @@
 const assert = require('assert');
 const {Router} = require('express');
 const {compile} = require('../comp');
-const {error, statusCodeFromErrors, messageFromErrors} = require('../util');
+const {error, statusCodeFromErrors, messageFromErrors, setMetadataBuilds} = require('../util');
+const build = require('../../build.json');
 module.exports = () => {
   const router = new Router();
   router.get('/', async (req, res) => {
@@ -14,6 +15,13 @@ module.exports = () => {
       let t0 = new Date;
       let val = await compile(auth, item);
       console.log("GET /compile in " + (new Date - t0) + "ms");
+      if (!val._) {
+        val._ = {};
+      }
+      if (!val._.builds) {
+        val._.builds = [];
+      }
+      setMetadataBuilds(val, build);
       res.set("Access-Control-Allow-Origin", "*");
       res.status(200).json(val);
     } catch(err) {
@@ -46,6 +54,7 @@ module.exports = () => {
       let val = await compile(auth, item);
       let refresh = item.options && item.options.refresh;
       const statusCode = val.error && 400 || 200;
+      setMetadataBuilds(val, build);
       res.set("Access-Control-Allow-Origin", "*");
       res.status(statusCode).json(val);
     } catch(err) {
