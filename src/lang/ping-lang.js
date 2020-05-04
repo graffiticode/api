@@ -1,8 +1,8 @@
 function noop(){}
-export function buildPingPong({ getBaseUrlForLanguage, bent }) {
+export function buildPingLang({ getBaseUrlForLanguage, bent }) {
   const cache = new Map();
 
-  async function pingPongInternal(lang) {
+  async function pingLangInternal(lang) {
     try {
       const baseUrl = getBaseUrlForLanguage(lang);
       const headLang = bent(baseUrl, 'HEAD');
@@ -14,16 +14,15 @@ export function buildPingPong({ getBaseUrlForLanguage, bent }) {
     }
   }
 
-  return async function pingPong(lang, resume) {
+  return async function pingLang(lang, resume) {
     if (typeof resume !== 'function') {
       resume = noop;
     }
 
     if (!cache.has(lang)) {
-      cache.set(lang, pingPongInternal(lang));
+      cache.set(lang, pingLangInternal(lang));
     }
     const pong = await cache.get(lang);
-    console.log(pong);
     if (!pong) {
       cache.delete(lang);
     }

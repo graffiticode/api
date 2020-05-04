@@ -1,17 +1,17 @@
-import { buildPingPong } from './ping-pong';
+import { buildPingLang } from './ping-lang';
 
-describe('pingPong', () => {
+describe('pingLang', () => {
   it('should return true when language pongs', async () => {
     // Arrange
     const baseUrl = 'http://ltest.artcompiler.com';
     const getBaseUrlForLanguage = jest.fn().mockReturnValue(baseUrl);
     const call = jest.fn().mockResolvedValue();
     const bent = jest.fn().mockReturnValue(call);
-    const pingPong = buildPingPong({ getBaseUrlForLanguage, bent });
+    const pingLang = buildPingLang({ getBaseUrlForLanguage, bent });
     const lang = 'LTest';
 
     // Act
-    const pong = await pingPong(lang);
+    const pong = await pingLang(lang);
 
     // Assert
     expect(getBaseUrlForLanguage).toHaveBeenCalledWith(lang);
@@ -26,11 +26,11 @@ describe('pingPong', () => {
     const getBaseUrlForLanguage = jest.fn().mockReturnValue(baseUrl);
     const call = jest.fn().mockRejectedValue(new Error('failed to ping'));
     const bent = jest.fn().mockReturnValue(call);
-    const pingPong = buildPingPong({ getBaseUrlForLanguage, bent });
+    const pingLang = buildPingLang({ getBaseUrlForLanguage, bent });
     const lang = 'LTest';
 
     // Act
-    const pong = await pingPong(lang);
+    const pong = await pingLang(lang);
 
     // Assert
     expect(getBaseUrlForLanguage).toHaveBeenCalledWith(lang);
@@ -45,12 +45,12 @@ describe('pingPong', () => {
     const getBaseUrlForLanguage = jest.fn().mockReturnValue(baseUrl);
     const call = jest.fn().mockResolvedValue();
     const bent = jest.fn().mockReturnValue(call);
-    const pingPong = buildPingPong({ getBaseUrlForLanguage, bent });
+    const pingLang = buildPingLang({ getBaseUrlForLanguage, bent });
     const lang = 'LTest';
 
     // Act
-    const pong1 = await pingPong(lang);
-    const pong2 = await pingPong(lang);
+    const pong1 = await pingLang(lang);
+    const pong2 = await pingLang(lang);
 
     // Assert
     expect(getBaseUrlForLanguage).toHaveBeenCalledTimes(1);
@@ -71,12 +71,12 @@ describe('pingPong', () => {
       .mockRejectedValueOnce(new Error('failed to ping'))
       .mockResolvedValue();
     const bent = jest.fn().mockReturnValue(call);
-    const pingPong = buildPingPong({ getBaseUrlForLanguage, bent });
+    const pingLang = buildPingLang({ getBaseUrlForLanguage, bent });
     const lang = 'LTest';
 
     // Act
-    const pong1 = await pingPong(lang);
-    const pong2 = await pingPong(lang);
+    const pong1 = await pingLang(lang);
+    const pong2 = await pingLang(lang);
 
     // Assert
     expect(getBaseUrlForLanguage).toHaveBeenCalledTimes(2);

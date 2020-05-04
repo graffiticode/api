@@ -3,7 +3,7 @@ import { getConfig } from '../config';
 import { isNonEmptyString, getCompilerHost, getCompilerPort } from '../util';
 
 import { buildGetBaseUrlForLanguage } from './base-url';
-import { buildPingPong } from './ping-pong';
+import { buildPingLang } from './ping-lang';
 
 export const getBaseUrlForLanguage = buildGetBaseUrlForLanguage({
   isNonEmptyString,
@@ -13,7 +13,7 @@ export const getBaseUrlForLanguage = buildGetBaseUrlForLanguage({
   getCompilerPort,
 });
 
-export const pingPong = buildPingPong({
+export const pingLang = buildPingLang({
   getBaseUrlForLanguage,
   bent,
 });
