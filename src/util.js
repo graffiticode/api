@@ -60,6 +60,7 @@ function setMetadataBuilds(data, build) {
     data._.builds = [];
   }
   data._.builds.push(build);
+  console.log("setMetadataBuilds() data=" + JSON.stringify(data, null, 2));
 }
 
 function getCompilerHost(lang, config) {
