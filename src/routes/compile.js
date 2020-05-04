@@ -49,7 +49,6 @@ module.exports = () => {
       const statusCode = val.error && 400 || 200;
       setMetadataBuilds(val, build);
       res.set("Access-Control-Allow-Origin", "*");
-      console.log("POST /compile val=" + JSON.stringify(val, null, 2));
       res.status(statusCode).json(val);
     } catch(err) {
       res.status(statusCodeFromErrors(err)).json(messageFromErrors(err));
