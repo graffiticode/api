@@ -59,7 +59,9 @@ function setMetadataBuilds(data, build) {
   if (!data._.builds) {
     data._.builds = [];
   }
-  data._.builds.push(build);
+  if (!data._.builds.some(b => build.name === b.name)) {
+    data._.builds.push(build);
+  }
 }
 
 function getCompilerHost(lang, config) {
