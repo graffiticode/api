@@ -1,42 +1,38 @@
-const {Router} = require('express');
-const {pingLang} = require('../lang');
-const {getCompilerHost, getCompilerPort} = require('../util');
-module.exports = () => {
-  const router = new Router();
-  router.get('/', (req, res) => {
-    let [unused, base, path] = req.baseUrl.split("/");
-    let id =
-        base === "lang" && req.query.id ||
-        base.indexOf('L') === 0 && base.slice(1);
-    if (isNaN(parseInt(id))) {
-      res.sendStatus(400);
-    } else {
-      let lang = 'L' + id;
-      pingLang(lang, pong => {
-        if (pong) {
-          if (path === undefined) {
-            res.set("Access-Control-Allow-Origin", "*");
-            res.sendStatus(200);
-          } else {
-            let config = global.config;
-            let options = {
-              host: getCompilerHost(lang, config),
-              port: getCompilerPort(lang, config),
-              path: '/' + path,
-            };
-            req = protocol.get(options, (langRes) => {
-              const data = [];
-              langRes
-                .on('data', (chunk) => data.push(chunk))
-                .on('end', () => {
-                  res.status(langRes.statusCode).send(data.join(''));
-                });
-            });
-          }
-        } else {
-          res.sendStatus(404);
-        }
-      });
+function getLangIdFromRequest(req) {
+  const [, base, path] = req.baseUrl.split('/');
+  let id = Number.parseInt(req.query.id);
+  if (base === 'lang' && Number.isInteger(id)) {
+    return id;
+  }
+  id = Number.parseInt(base.slice(1));
+  if (base.indexOf('L') === 0 && Number.isInteger(id)) {
+    return id;
+  }
+  const err = new Error('must provide lang');
+  err.statusCode = 400;
+  throw err;
+}
+
+export function buildLangRouter({ newRouter, pingLang, getAsset, isNonEmptyString }) {
+  const router = newRouter();
+  router.get('/', async (req, res, next) => {
+    try {
+      const langId = getLangIdFromRequest(req);
+      const lang = `L${langId}`;
+      const pong = await pingLang(lang);
+      if (!pong) {
+        res.sendStatus(404);
+        return;
+      }
+      const [, , path] = req.baseUrl.split('/');
+      if (!isNonEmptyString(path)) {
+        res.sendStatus(200);
+        return;
+      }
+      const asset = await getAsset(lang, `/${path}`);
+      res.status(200).send(asset);
+    } catch(err) {
+      next(err);
     }
   });
   return router;

@@ -1,4 +1,4 @@
-import * as bent from 'bent';
+import bent from 'bent';
 import { getConfig } from '../config';
 import { isNonEmptyString, getCompilerHost, getCompilerPort } from '../util';
 

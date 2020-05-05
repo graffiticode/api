@@ -1,4 +1,4 @@
-import buildGetConfig from "./config";
+import buildGetConfig from './config';
 
 const getConfig = buildGetConfig({ global });
 
