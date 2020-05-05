@@ -1,9 +1,7 @@
 {
   "hosts": {
-    "L0": "l0.acx.ac"
   },
   "ports": {
-    "L0": "443"
   },
   "protocol": "https",
   "metadata": {
