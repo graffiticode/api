@@ -53,6 +53,10 @@ function parseJSON(str) {
 }
 
 function setMetadataBuilds(data, build) {
+  if (typeof data !== 'object' || data === null || data instanceof Array) {
+    // We got nothing to hang the metadata on.
+    return;
+  }
   if (!data._) {
     data._ = {};
   }
