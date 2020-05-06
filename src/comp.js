@@ -154,13 +154,6 @@ function comp(auth, lang, code, data, options, resume) {
   });
 }
 
-function getIDFromType(type) {
-  switch (type) {
-  default:
-    return null;
-  }
-}
-
 function verifyCode(code) {
   // Return code if valid, otherwise return null.
   // TODO verify code.
