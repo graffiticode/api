@@ -58,36 +58,40 @@ function compileID(auth, id, options, resume) {
         resume(err, val);
       } else {
         getData(ids, (err, data) => {
-          getCode(ids, (err, code) => {
-            if (err && err.length) {
-              resume(err, null);
-            } else {
-              getLang(ids, (err, lang) => {
-                if (err && err.length) {
-                  resume(err, null);
-                } else {
-                  if (code && code.root) {
-                    assert(code && code.root !== undefined, "Invalid code for item " + ids[1]);
-                    // Let downstream compilers know they need to refresh
-                    // any data used.
-                    comp(auth, lang, code, data, options, (err, obj) => {
-                      if (err) {
-                        resume(err);
-                      } else {
-                        // TODO cache id => obj.
-                        setCache(lang, id, "data", obj);
-                        resume(null, obj);
-                      }
-                    });
+          if (err && err.length) {
+            resume(err, null);
+          } else {
+            getCode(ids, (err, code) => {
+              if (err && err.length) {
+                resume(err, null);
+              } else {
+                getLang(ids, (err, lang) => {
+                  if (err && err.length) {
+                    resume(err, null);
                   } else {
-                    // Error handling here.
-                    console.log("ERROR compileID() ids=" + ids + " missing code");
-                    resume(null, {});
+                    if (code && code.root) {
+                      assert(code && code.root !== undefined, "Invalid code for item " + ids[1]);
+                      // Let downstream compilers know they need to refresh
+                      // any data used.
+                      comp(auth, lang, code, data, options, (err, obj) => {
+                        if (err) {
+                          resume(err);
+                        } else {
+                          // TODO cache id => obj.
+                          setCache(lang, id, "data", obj);
+                          resume(null, obj);
+                        }
+                      });
+                    } else {
+                      // Error handling here.
+                      console.log("ERROR compileID() ids=" + ids + " missing code");
+                      resume(null, {});
+                    }
                   }
-                }
-              });
-            }
-          });
+                });
+              }
+            });
+          }
         });
       }
     });
