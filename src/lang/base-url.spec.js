@@ -2,7 +2,7 @@ import { buildGetBaseUrlForLanguage } from './base-url';
 import { isNonEmptyString } from '../util';
 
 describe('baseUrl', () => {
-  it('should throw if lang is not a string', async() => {
+  it('should throw if lang is not a string', async () => {
     // Arrange
     const getLanguageBaseUrl = buildGetBaseUrlForLanguage({ isNonEmptyString });
 
@@ -12,7 +12,7 @@ describe('baseUrl', () => {
     // Assert
   });
 
-  it('should return default when no config or env', async() => {
+  it('should return default when no config or env', async () => {
     // Arrange
     const env = {};
     const config = { protocol: 'https' };
@@ -35,7 +35,7 @@ describe('baseUrl', () => {
     expect(baseUrl).toBe('https://ltest.artcompiler.com:443');
   });
 
-  it('should return env override', async() => {
+  it('should return env override', async () => {
     // Arrange
     const env = { BASE_URL_LTEST: 'http://localhost:5000' };
     const config = { protocol: 'https' };
@@ -58,7 +58,7 @@ describe('baseUrl', () => {
     expect(baseUrl).toBe('http://localhost:5000');
   });
 
-  it('should return configured compiler values', async() => {
+  it('should return configured compiler values', async () => {
     // Arrange
     const env = {};
     const config = { protocol: 'http' };

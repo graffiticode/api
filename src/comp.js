@@ -1,11 +1,8 @@
 const assert = require('assert');
 const {decodeID, encodeID, objectToID, objectFromID} = require('./id');
 const {delCache, getCache, setCache} = require('./cache');
-const {pingLang} = require('./lang');
-const {getCompilerHost,
-       getCompilerPort,
-       parseJSON,
-       internalError} = require('./util');
+import {compile as langCompile, pingLang}  from './lang';
+const {internalError} = require('./util');
 
 const nilID = encodeID([0,0,0]);
 
@@ -98,64 +95,19 @@ function compileID(auth, id, options, resume) {
   }
 }
 
-function comp(auth, lang, code, data, options, resume) {
-  pingLang(lang, pong => {
-    if (pong) {
-      // Compile ast to obj.
-      var path = "/compile";
-      var encodedData = JSON.stringify({
-        code: code,
-        data: data,
-        options: options,
-        auth: auth,
-      });
-      var reqOptions = {
-        host: getCompilerHost(lang, global.config),
-        port: getCompilerPort(lang, global.config),
-        path: path,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(encodedData),
-        },
-      };
-      var req = global.protocol.request(reqOptions, (res) => {
-        const chunks = [];
-        res
-          .on('error', (err) => {
-            console.log("[1] comp() ERROR " + err);
-            resume([internalError()]);
-          })
-          .on('data', (chunk) => chunks.push(chunk))
-          .on('end', () => {
-            const body = chunks.map(c => c.toString()).join('');
-            const data = parseJSON(body);
-            if (res.statusCode !== 200) {
-              let err = null;
-              // If not 200, then payload should have an error field.
-              if (data) {
-                assert(data.error);
-                err = [data.error];
-              } else {
-                assert(body);
-                err = [body];
-              }
-              resume(err);
-            } else {
-              resume(null, data);
-            }
-          });
-      });
-      req.on('error', (err) => {
-        console.log("[2] comp() ERROR " + err);
-        resume([internalError()]);
-      });
-      req.write(encodedData);
-      req.end();
-    } else {
+async function comp(auth, lang, code, data, options, resume) {
+  try {
+    const pong = await pingLang(lang);
+    if (!pong) {
       resume([internalError()]);
+    } else {
+      const req = { code, data, options, auth };
+      const res = await langCompile(lang, req);
+      resume(null, res);
     }
-  });
+  } catch(err) {
+    resume(err);
+  }
 }
 
 function verifyCode(code) {

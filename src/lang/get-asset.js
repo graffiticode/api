@@ -9,7 +9,7 @@ export function buildGetAsset({ getBaseUrlForLanguage, bent }) {
         cache.set(key, getLanguageAsset(path));
       }
       return await cache.get(key);
-    } catch(err) {
+    } catch (err) {
       cache.delete(key);
       throw err;
     }

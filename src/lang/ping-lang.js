@@ -1,4 +1,4 @@
-function noop(){}
+function noop() { }
 export function buildPingLang({ getBaseUrlForLanguage, bent }) {
   const cache = new Map();
 
@@ -8,7 +8,7 @@ export function buildPingLang({ getBaseUrlForLanguage, bent }) {
       const headLang = bent(baseUrl, 'HEAD');
       await headLang('/');
       return true;
-    } catch(err) {
+    } catch (err) {
       console.log(`Failed to ping language ${lang}: ${err.message}`);
       return false;
     }
