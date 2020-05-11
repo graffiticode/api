@@ -1,5 +1,5 @@
 function getLangIdFromRequest(req) {
-  const [, base, path] = req.baseUrl.split('/');
+  const [, base] = req.baseUrl.split('/');
   let id = Number.parseInt(req.query.id);
   if (base === 'lang' && Number.isInteger(id)) {
     return id;
@@ -19,18 +19,17 @@ export function buildLangRouter({ newRouter, pingLang, getAsset, isNonEmptyStrin
     try {
       const langId = getLangIdFromRequest(req);
       const lang = `L${langId}`;
+      const [, , path] = req.baseUrl.split('/');
+      
       const pong = await pingLang(lang);
       if (!pong) {
         res.sendStatus(404);
-        return;
-      }
-      const [, , path] = req.baseUrl.split('/');
-      if (!isNonEmptyString(path)) {
+      } else if (isNonEmptyString(path)) {
+        const asset = await getAsset(lang, `/${path}`);
+        res.status(200).send(asset);
+      } else {
         res.sendStatus(200);
-        return;
       }
-      const asset = await getAsset(lang, `/${path}`);
-      res.status(200).send(asset);
     } catch(err) {
       next(err);
     }
