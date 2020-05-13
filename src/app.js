@@ -15,7 +15,10 @@ require('./../configs/config.json');
 
 global.config = require(process.env.CONFIG || './../configs/config.json');
 global.config.useLocalCompiles = process.env.LOCAL_COMPILES === 'true';
-global.protocol = (global.config.useLocalCompiles || global.config.protocol === 'http') && http || https;
+global.config.protocol =
+  (global.config.useLocalCompiles || global.config.protocol === 'http') && 'http' ||
+  global.config.protocol ||
+  'https';
 
 const app = module.exports = express();
 app.all('*', (req, res, next) => {

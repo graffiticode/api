@@ -20,7 +20,6 @@ export function buildLangRouter({ newRouter, pingLang, getAsset, isNonEmptyStrin
       const langId = getLangIdFromRequest(req);
       const lang = `L${langId}`;
       const [, , path] = req.baseUrl.split('/');
-      
       const pong = await pingLang(lang);
       if (!pong) {
         res.sendStatus(404);
