@@ -7,10 +7,14 @@ function rmdir(path) {
   if (files.length > 0) {
     for (var i = 0; i < files.length; i++) {
       var filePath = path + '/' + files[i];
-      if (fs.statSync(filePath).isFile()) {
-        fs.unlinkSync(filePath);
-      } else {
-	      rmdir(filePath);
+      try {
+        if (fs.statSync(filePath).isFile()) {
+          fs.unlinkSync(filePath);
+        } else {
+          rmdir(filePath);
+        }
+      } catch(err) {
+        console.log(`Failed to unlink ${filePath}: ${err.message}`);
       }
     }
   }
@@ -33,8 +37,6 @@ function exec(cmd, args) {
 
 function clean() {
   console.log("Cleaning...");
-  cldir("./pub");
-  cldir("./lib");
   cldir("./build");
 }
 
