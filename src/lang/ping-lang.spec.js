@@ -1,13 +1,14 @@
 import { buildPingLang } from './ping-lang';
 
 describe('pingLang', () => {
+  const log = jest.fn();
   it('should return true when language pongs', async () => {
     // Arrange
     const baseUrl = 'http://ltest.artcompiler.com';
     const getBaseUrlForLanguage = jest.fn().mockReturnValue(baseUrl);
     const call = jest.fn().mockResolvedValue();
     const bent = jest.fn().mockReturnValue(call);
-    const pingLang = buildPingLang({ getBaseUrlForLanguage, bent });
+    const pingLang = buildPingLang({ getBaseUrlForLanguage, bent, log });
     const lang = 'LTest';
 
     // Act
@@ -26,7 +27,7 @@ describe('pingLang', () => {
     const getBaseUrlForLanguage = jest.fn().mockReturnValue(baseUrl);
     const call = jest.fn().mockRejectedValue(new Error('failed to ping'));
     const bent = jest.fn().mockReturnValue(call);
-    const pingLang = buildPingLang({ getBaseUrlForLanguage, bent });
+    const pingLang = buildPingLang({ getBaseUrlForLanguage, bent, log });
     const lang = 'LTest';
 
     // Act
@@ -45,7 +46,7 @@ describe('pingLang', () => {
     const getBaseUrlForLanguage = jest.fn().mockReturnValue(baseUrl);
     const call = jest.fn().mockResolvedValue();
     const bent = jest.fn().mockReturnValue(call);
-    const pingLang = buildPingLang({ getBaseUrlForLanguage, bent });
+    const pingLang = buildPingLang({ getBaseUrlForLanguage, bent, log });
     const lang = 'LTest';
 
     // Act
@@ -71,7 +72,7 @@ describe('pingLang', () => {
       .mockRejectedValueOnce(new Error('failed to ping'))
       .mockResolvedValue();
     const bent = jest.fn().mockReturnValue(call);
-    const pingLang = buildPingLang({ getBaseUrlForLanguage, bent });
+    const pingLang = buildPingLang({ getBaseUrlForLanguage, bent, log });
     const lang = 'LTest';
 
     // Act
