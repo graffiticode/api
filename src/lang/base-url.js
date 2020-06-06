@@ -16,6 +16,13 @@ export function buildGetBaseUrlForLanguage({
     const config = getConfig();
     const host = getCompilerHost(lang, config);
     const port = getCompilerPort(lang, config);
-    return `${config.protocol || 'https'}://${host}:${port}`;
+
+    let protocol = 'https';
+    if (env['LOCAL_COMPILES'] === 'true') {
+      protocol = 'http';
+    } else if (isNonEmptyString(config.protocol)) {
+      protocol = config.protocol;
+    }
+    return `${protocol}://${host}:${port}`;
   };
 }

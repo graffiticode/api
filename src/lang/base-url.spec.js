@@ -82,4 +82,29 @@ describe('baseUrl', () => {
     expect(getCompilerPort).toHaveBeenCalledWith(lang, config);
     expect(baseUrl).toBe('http://localhost:5000');
   });
+
+  it('should use http if LOCAL_COMPILES is true', async () => {
+    // Arrange
+    const env = { LOCAL_COMPILES: 'true' };
+    const config = { protocol: 'https' };
+    const getConfig = jest.fn().mockReturnValue(config);
+    const getCompilerHost = jest.fn().mockReturnValue('localhost');
+    const getCompilerPort = jest.fn().mockReturnValue('5000');
+    const getLanguageBaseUrl = buildGetBaseUrlForLanguage({
+      isNonEmptyString,
+      env,
+      getConfig,
+      getCompilerHost,
+      getCompilerPort
+    });
+    const lang = 'LTest';
+
+    // Act
+    const baseUrl = getLanguageBaseUrl(lang);
+
+    // Assert
+    expect(getCompilerHost).toHaveBeenCalledWith(lang, config);
+    expect(getCompilerPort).toHaveBeenCalledWith(lang, config);
+    expect(baseUrl).toBe('http://localhost:5000');
+  });
 });
