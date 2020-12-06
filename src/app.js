@@ -1,10 +1,9 @@
 const errorHandler = require('errorhandler');
 const express = require('express');
-const http = require('http');
-const https = require('https');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const routes = require('./routes');
+
 const port = global.port = process.env.PORT || 3100;
 const env = process.env.NODE_ENV || 'development';
 

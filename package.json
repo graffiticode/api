@@ -10,6 +10,19 @@
   },
   "main": "build/src/app.js",
   "dependencies": {
+    "@google-cloud/opentelemetry-cloud-trace-exporter": "^0.7.0",
+    "@opentelemetry/api": "^0.13.0",
+    "@opentelemetry/core": "^0.13.0",
+    "@opentelemetry/metrics": "^0.13.0",
+    "@opentelemetry/node": "^0.13.0",
+    "@opentelemetry/plugin-dns": "^0.11.0",
+    "@opentelemetry/plugin-express": "^0.11.0",
+    "@opentelemetry/plugin-http": "^0.13.0",
+    "@opentelemetry/plugin-https": "^0.13.0",
+    "@opentelemetry/plugin-pg": "^0.11.0",
+    "@opentelemetry/plugin-pg-pool": "^0.11.0",
+    "@opentelemetry/plugin-redis": "^0.11.0",
+    "@opentelemetry/tracing": "^0.13.0",
     "aws-serverless-express": "^3.3.6",
     "bent": "^7.3.0",
     "child_process": "^1.0.2",
@@ -18,7 +31,7 @@
     "hashids": "1.1.1",
     "method-override": "^3.0.0",
     "morgan": "^1.9.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "pg": "6.1.6",
     "redis": "2.6.3",
     "uuid": "^3.3.3"
@@ -44,7 +57,7 @@
     "uglify-js": "^2.7.3"
   },
   "scripts": {
-    "start": "node build/src/app.js",
+    "start": "node -r ./tracing.js build/src/app.js",
     "build-dev": "node tools/build.js --build-dev",
     "build": "node tools/build.js",
     "pretest": "npm run build",
