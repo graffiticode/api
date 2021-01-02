@@ -18,5 +18,5 @@ steps:
     - '--platform'
     - 'managed'
 images:
-- gcr.io/$PROJECT_ID/graffiticode/api
+- gcr.io/$PROJECT_ID/graffiticode/api:$COMMIT_SHA
 
