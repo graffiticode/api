@@ -4,13 +4,20 @@ function getLangIdFromRequest(req) {
   if (base === 'lang' && Number.isInteger(id)) {
     return id;
   }
-  id = Number.parseInt(base.slice(1));
-  if (base.indexOf('L') === 0 && Number.isInteger(id)) {
-    return id;
+  const re = new RegExp('^[Ll](\\d+)$');
+  const match = re.exec(base);
+  if (!match) {
+    const err = new Error('must provide a language identifier');
+    err.statusCode = 400;
+    throw err;
   }
-  const err = new Error('must provide lang');
-  err.statusCode = 400;
-  throw err;
+  id = Number.parseInt(match[1]);
+  if (!Number.isInteger(id)) {
+    const err = new Error('should not be possible');
+    err.statusCode = 500;
+    throw err;
+  }
+  return id;
 }
 
 export function buildLangRouter({ newRouter, pingLang, getAsset, isNonEmptyString }) {

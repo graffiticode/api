@@ -5,7 +5,8 @@ import { isNonEmptyString } from '../util';
 import { buildLangRouter } from './lang';
 
 describe.each([
-  ['path param', (l, p) => `/L${l}${p}`],
+  ['path param with L', (l, p) => `/L${l}${p}`],
+  ['path param with l', (l, p) => `/l${l}${p}`],
   ['query param', (l, p) => `/lang${p}?id=${l}`],
 ])('lang router: %s', (name, getPath) => {
   it('should return languages asset', async () => {
