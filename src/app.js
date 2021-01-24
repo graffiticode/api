@@ -7,6 +7,8 @@ const routes = require('./routes');
 const port = global.port = process.env.PORT || 3100;
 const env = process.env.NODE_ENV || 'development';
 
+require('events').EventEmitter.defaultMaxListeners = 15;
+
 // This line is required to ensure the typescript compiler moves the default
 // config into the build directory.
 // TODO(kevindyer) Refactor the creation of the app to inject the config
