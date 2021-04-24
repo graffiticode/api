@@ -112,8 +112,13 @@ async function comp(auth, lang, code, data, options, resume) {
 
 function verifyCode(code) {
   // Return code if valid, otherwise return null.
-  // TODO verify code.
-  return code;
+  if (code.root) {
+    return code;
+  } else if (typeof code === 'string') {
+    return parse(lang, src);
+  } else {
+    return null;
+  }
 }
 
 function compile(auth, item) {
