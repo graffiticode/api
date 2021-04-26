@@ -32,15 +32,16 @@
     "node-fetch": "^2.6.1",
     "pg": "6.1.6",
     "redis": "2.6.3",
-    "require": "^0.4.4",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@types/jest": "^25.2.3",
     "@types/node": "^12.19.11",
     "chai": "^4.2.0",
+    "cli-spinners": "^2.6.0",
     "graceful-fs": "^4.2.4",
     "jest": "^26.6.3",
+    "log-update": "^4.0.0",
     "nodemon": "^2.0.6",
     "nyc": "^14.1.1",
     "react": "0.14.5",
