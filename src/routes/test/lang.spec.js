@@ -1,8 +1,8 @@
 import express, { Router } from 'express';
 import request from 'supertest';
-import { isNonEmptyString } from '../util';
+import { isNonEmptyString } from '../../util';
 
-import { buildLangRouter } from './lang';
+import { buildLangRouter } from '../lang.js';
 
 describe.each([
   ['path param with L', (l, p) => `/L${l}${p}`],

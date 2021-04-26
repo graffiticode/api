@@ -1,4 +1,4 @@
-import buildProxyHandler from './proxy';
+import buildProxyHandler from '../proxy.js';
 
 describe('routes', () => {
   describe('proxy', () => {

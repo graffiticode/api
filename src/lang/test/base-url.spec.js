@@ -1,5 +1,5 @@
-import { buildGetBaseUrlForLanguage } from './base-url';
-import { isNonEmptyString } from '../util';
+import { buildGetBaseUrlForLanguage } from '../base-url';
+import { isNonEmptyString } from '../../util';
 
 describe('baseUrl', () => {
   it('should throw if lang is not a string', async () => {

@@ -2,7 +2,7 @@ import bent from 'bent';
 import express from 'express';
 import http from 'http';
 
-import { buildCompile } from './compile';
+import { buildCompile } from '../compile.js';
 
 describe('compile', () => {
   it('should return language response', async () => {
