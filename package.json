@@ -38,7 +38,7 @@
     "uglify-js": "^2.7.3"
   },
   "scripts": {
-    "start": "node -r ./tracing.js build/src/app.js",
+    "start": "node build/src/app.js",
     "build-dev": "node tools/build.js --build-dev",
     "build": "node tools/build.js",
     "pretest": "npm run build",

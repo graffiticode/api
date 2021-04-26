@@ -47,7 +47,7 @@ function compile() {
 
 function bundle() {
   console.log("Bundling...");
-  exec('cp -r ./configs ./build/configs');
+  exec('cp -r ./config ./build/config');
   exec('cp build.json ./build');
 }
 

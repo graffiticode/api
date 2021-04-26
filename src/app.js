@@ -12,9 +12,9 @@ require('events').EventEmitter.defaultMaxListeners = 15;
 // This line is required to ensure the typescript compiler moves the default
 // config into the build directory.
 // TODO(kevindyer) Refactor the creation of the app to inject the config
-require('./../configs/config.json');
+require('./../config/config.json');
 
-global.config = require(process.env.CONFIG || './../configs/config.json');
+global.config = require(process.env.CONFIG || './../config/config.json');
 global.config.useLocalCompiles = process.env.LOCAL_COMPILES === 'true';
 
 const app = module.exports = express();
